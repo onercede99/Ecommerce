@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>My Order History</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div class="container">
+        <h1 class="my-4">My Order History</h1>
+        <div class="col-md-3">
+            <div class="list-group">
+                <a th:href="@{/account/profile}" class="list-group-item list-group-item-action " >
+                    Change Password
+                </a>
+                <a th:href="@{/account/orders}" class="list-group-item list-group-item-action active" aria-current="true">Order History</a>
+            </div>
+        </div>
+        <div th:if="${!orders.isEmpty()}" class="accordion" id="orderHistoryAccordion">
+            <div class="accordion-item" th:each="order, iterStat : ${orders}">
+                <h2 class="accordion-header" th:id="'heading' + ${iterStat.count}">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            th:data-bs-target="'#collapse' + ${iterStat.count}" aria-expanded="false"
+                            th:aria-controls="'collapse' + ${iterStat.count}">
+                        <div class="w-100 d-flex justify-content-between pe-3">
+                            <span>Order #[[${order.id}]]</span>
+                            <span th:text="${#temporals.format(order.orderDate, 'dd MMM yyyy')}"></span>
+                            <span class="badge"
+                                  th:classappend="${order.status == 'PENDING' ? 'bg-warning text-dark' : (order.status == 'DELIVERED' ? 'bg-success' : 'bg-secondary')}"
+                                  th:text="${order.status}">
+                            </span>
+                        </div>
+                    </button>
+                </h2>
+                <div th:id="'collapse' + ${iterStat.count}" class="accordion-collapse collapse"
+                     th:aria-labelledby="'heading' + ${iterStat.count}" data-bs-parent="#orderHistoryAccordion">
+                    <div class="accordion-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Shipping Address:</strong>
+                                <p th:text="${order.shippingAddress}"></p>
+                                <strong>Total Price:</strong>
+                                <p class="fw-bold" th:text="'$' + ${#numbers.formatDecimal(order.totalPrice, 1, 'COMMA', 2, 'POINT')}"></p>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Items:</strong>
+                                <ul>
+                                    <li th:each="detail : ${order.orderDetails}">
+                                        [[${detail.product.name}]] (x[[${detail.quantity}]])
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+  <title th:text="${pageTitle}">Product Form</title>
+</head>
+<body>
+<section layout:fragment="content">
+  <div class="container">
+    <h1 class="my-4" th:text="${pageTitle}">Product Form</h1>
+
+    <!-- Form luôn gửi đến /save -->
+    <form th:action="@{/admin/products/save}" th:object="${product}"
+          method="post" enctype="multipart/form-data">
+
+      <!-- Trường ID ẩn để Spring biết đây là edit hay add -->
+      <input type="hidden" th:field="*{id}" />
+
+      <div class="mb-3">
+        <label for="name" class="form-label">Product Name</label>
+        <input type="text" th:field="*{name}" class="form-control" id="name" required>
+        <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+      </div>
+      <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea th:field="*{description}" class="form-control" id="description" rows="3"></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="price" class="form-label">Price</label>
+        <input type="number" th:field="*{price}" class="form-control" id="price" step="0.01" required>
+        <div class="text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+      </div>
+      <div class="mb-3">
+        <label for="imageFile" class="form-label">Product Image</label>
+        <input type="file" name="imageFile" class="form-control" id="imageFile" accept="image/png, image/jpeg" />
+      </div>
+
+      <!-- Hiển thị ảnh hiện tại nếu là edit mode -->
+      <div th:if="${product.id != null and product.imageUrl != null}" class="mb-3">
+        <label class="form-label">Current Image:</label>
+        <div>
+          <img th:src="@{${product.getPhotosImagePath()}}" width="150" />
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Save Product</button>
+      <a th:href="@{/admin/products}" class="btn btn-secondary">Cancel</a>
+    </form>
+  </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+  <title th:text="${product.name}">Product Detail</title>
+</head>
+<body>
+<section layout:fragment="content">
+  <div class="row">
+    <div class="col-md-6">
+      <img th:src="@{${product.getPhotosImagePath()}}" class="img-fluid rounded" alt="Product Image">
+    </div>
+    <div class="col-md-6">
+      <h1 th:text="${product.name}">Product Name</h1>
+      <p class="lead" th:text="${product.description}">Product description goes here.</p>
+      <h3 class="my-3" th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 'COMMA', 2, 'POINT')}">$99.99</h3>
+
+      <form th:action="@{/cart/add}" method="post" class="d-inline-flex align-items-center">
+        <input type="hidden" name="productId" th:value="${product.id}" />
+        <input type="number" name="quantity" value="1" min="1" class="form-control" style="width: 80px; margin-right: 10px;">
+        <button type="submit" class="btn btn-primary">Add to Cart</button>
+      </form>
+    </div>
+  </div>
+</section>
+</body>
+</html>

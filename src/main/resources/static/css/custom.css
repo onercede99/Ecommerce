@@ -1,0 +1,12 @@
+/* Hiển thị lại các nút tăng giảm cho input number trên trình duyệt Webkit (Chrome, Safari) */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: auto;
+    opacity: 1;
+    margin: 0;
+}
+
+/* Hiển thị lại các nút tăng giảm cho input number trên Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}

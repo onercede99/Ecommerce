@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<!-- Dòng 1: Khai báo đầy đủ để sử dụng layout -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>Home Page</title>
+</head>
+<body>
+
+<section layout:fragment="content">
+    <div class="container mt-5">
+        <div class="p-5 mb-4 bg-light rounded-3 text-center">
+            <div class="container-fluid py-5">
+                <h1 class="display-4 fw-bold">Welcome to Our E-Commerce Store!</h1>
+                <p class="fs-4">We offer the best books for developers and tech enthusiasts.</p>
+                <hr class="my-4">
+                <p>Explore our amazing collection of products and start your learning journey today.</p>
+                <a class="btn btn-primary btn-lg" th:href="@{/products}" role="button">
+                    <i class="fas fa-shopping-cart"></i> Shop Now
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row text-center">
+        <div class="col-lg-4">
+            <h2>Quality Products</h2>
+            <p>Hand-picked books to boost your career.</p>
+        </div>
+        <div class="col-lg-4">
+            <h2>Fast Shipping</h2>
+            <p>Get your books delivered to your doorstep quickly.</p>
+        </div>
+        <div class="col-lg-4">
+            <h2>Great Support</h2>
+            <p>Our team is here to help you with any questions.</p>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>

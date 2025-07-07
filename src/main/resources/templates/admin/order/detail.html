@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+  <title>Order Detail - #[[${order.id}]]</title>
+</head>
+<body>
+<section layout:fragment="content">
+  <div class="container">
+    <h1 class="my-4">Order Detail - #[[${order.id}]]</h1>
+
+    <div th:if="${message}" class="alert alert-success text-center" th:text="${message}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger text-center" th:text="${errorMessage}"></div>
+
+    <div class="row">
+      <!-- Customer & Order Info -->
+      <div class="col-md-6">
+        <div class="card mb-4">
+          <div class="card-header">
+            Customer Information
+          </div>
+          <div class="card-body">
+            <p><strong>Name:</strong> <span th:text="${order.customerName}"></span></p>
+            <p><strong>Address:</strong> <span th:text="${order.shippingAddress}"></span></p>
+            <p><strong>Phone:</strong> <span th:text="${order.phoneNumber}"></span></p>
+            <p><strong>Email:</strong> <span th:text="${order.email}"></span></p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            Order Status
+          </div>
+          <div class="card-body">
+            <form th:action="@{/admin/orders/update-status}" method="post" class="d-flex">
+              <input type="hidden" name="orderId" th:value="${order.id}">
+              <select name="status" class="form-select me-2">
+                <option th:selected="${order.status == 'PENDING'}" value="PENDING">Pending</option>
+                <option th:selected="${order.status == 'PROCESSING'}" value="PROCESSING">Processing</option>
+                <option th:selected="${order.status == 'SHIPPED'}" value="SHIPPED">Shipped</option>
+                <option th:selected="${order.status == 'DELIVERED'}" value="DELIVERED">Delivered</option>
+                <option th:selected="${order.status == 'CANCELED'}" value="CANCELED">Canceled</option>
+              </select>
+              <button type="submit" class="btn btn-primary">Update</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- Order Items -->
+      <div class="col-md-6">
+        <h4>Order Items</h4>
+        <table class="table">
+          <tbody>
+          <tr th:each="detail : ${order.orderDetails}">
+            <td>
+              <img th:src="@{${detail.product.getPhotosImagePath()}}" width="50" class="me-2">
+              <span th:text="${detail.product.name}"></span>
+            </td>
+            <td class="text-end">
+              <span th:text="${detail.quantity} + ' x $' + ${#numbers.formatDecimal(detail.price, 1, 'COMMA', 2, 'POINT')}"></span>
+            </td>
+          </tr>
+          <tr class="fw-bold">
+            <td class="text-end" colspan="1">Total:</td>
+            <td class="text-end" th:text="'$' + ${#numbers.formatDecimal(order.totalPrice, 1, 'COMMA', 2, 'POINT')}"></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <a th:href="@{/admin/orders}" class="btn btn-secondary mt-4">Back to Order List</a>
+  </div>
+</section>
+</body>
+</html>
