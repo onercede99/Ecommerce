@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
+import org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect;
 
 @Configuration
 @EnableWebSecurity
@@ -26,7 +27,6 @@ public class SecurityConfig {
     @Bean
     public HttpFirewall allowUrlEncodedSlashHttpFirewall() {
         StrictHttpFirewall firewall = new StrictHttpFirewall();
-        // Cho phép chuỗi // trong URL
         firewall.setAllowUrlEncodedDoubleSlash(true);
         return firewall;
     }
@@ -36,7 +36,7 @@ public class SecurityConfig {
         http
                 .csrf().disable()
                 .authorizeRequests(authorize -> authorize
-                        .antMatchers("/register/**", "/", "/home", "/cart/**","/products", "/checkout", "/order/place").permitAll()
+                        .antMatchers("/register/**", "/", "/home", "/cart/**","/products", "/checkout", "/order/place", ("/reviews/add")).permitAll()
                         .antMatchers("/css/**", "/js/**", "/product-images/**").permitAll()
                         .antMatchers("/admin/users/**", "/admin/dashboard").hasRole("ADMIN")
                         .antMatchers("/admin/api/**").hasRole("ADMIN")
@@ -59,5 +59,10 @@ public class SecurityConfig {
                 );
 
         return http.build();
+    }
+
+    @Bean
+    public SpringSecurityDialect springSecurityDialect() {
+        return new SpringSecurityDialect();
     }
 }

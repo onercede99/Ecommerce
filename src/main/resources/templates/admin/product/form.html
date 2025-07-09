@@ -32,6 +32,19 @@
         <div class="text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
       </div>
       <div class="mb-3">
+        <label for="category" class="form-label">Category</label>
+        <select th:field="*{category}" class="form-control" id="category" required>
+          <option value="">-- Select a Category --</option>
+          <!-- Chỗ này đã được đổi từ "listCategories" thành "allCategories" để khớp với Controller -->
+          <option th:each="cat : ${allCategories}"
+                  th:value="${cat.id}"
+                  th:text="${cat.name}">
+          </option>
+        </select>
+        <!-- Hiển thị lỗi validation nếu người dùng không chọn category -->
+        <div class="text-danger" th:if="${#fields.hasErrors('category')}" th:errors="*{category}"></div>
+      </div>
+      <div class="mb-3">
         <label for="imageFile" class="form-label">Product Image</label>
         <input type="file" name="imageFile" class="form-control" id="imageFile" accept="image/png, image/jpeg" />
       </div>

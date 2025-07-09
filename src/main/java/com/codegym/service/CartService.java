@@ -125,10 +125,6 @@ public class CartService implements ICartService {
         LOGGER.info("Session cart merged and removed.");
     }
 
-    // === CÁC PHƯƠNG THỨC LOGIC RIÊNG (PRIVATE) CHO TỪNG LOẠI GIỎ HÀNG ===
-
-    // --- Logic cho Giỏ hàng trong Session (Khách) ---
-
     private CartDto getSessionCart(HttpSession session) {
         CartDto cart = (CartDto) session.getAttribute(SESSION_CART_NAME);
         if (cart == null) {

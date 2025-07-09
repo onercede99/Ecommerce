@@ -1,6 +1,7 @@
 package com.codegym.controller;
 
 import com.codegym.model.Product;
+import com.codegym.repository.CategoryRepository;
 import com.codegym.repository.ProductRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +39,11 @@ public class AdminProductController {
 
 
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
-    public AdminProductController(ProductRepository productRepository) {
+    public AdminProductController(ProductRepository productRepository, CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     @GetMapping
@@ -71,6 +74,8 @@ public class AdminProductController {
     @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("product", new Product());
+        // Gửi danh sách tất cả category ra view
+        model.addAttribute("allCategories", categoryRepository.findAll());
         model.addAttribute("pageTitle", "Add New Product");
         return "admin/product/form";
     }
@@ -78,7 +83,8 @@ public class AdminProductController {
     @PostMapping("/save")
     public String saveProduct(@Valid @ModelAttribute("product") Product product,
                               BindingResult result,
-                              @RequestParam("imageFile") MultipartFile multipartFile,
+                              @RequestParam("imageFile") MultipartFile mainImageFile,
+                              @RequestParam("extraImageFiles") MultipartFile[] extraImageFiles,
                               RedirectAttributes ra,
                               Model model) {
         if (result.hasErrors()) {
@@ -87,58 +93,87 @@ public class AdminProductController {
         }
 
         try {
-            String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+            // --- BƯỚC 1: Xử lý và cập nhật Entity (chưa lưu vào DB) ---
 
-            if (fileName != null && !fileName.isEmpty()) {
-                product.setImageUrl(fileName);
-            } else if (product.getId() != null) {
-                Product existingProduct = productRepository.findById(product.getId()).orElse(null);
-                if (existingProduct != null) {
+            // 1.1 Xử lý ảnh chính
+            if (!mainImageFile.isEmpty()) {
+                // Trường hợp có upload ảnh chính mới
+                String mainImageName = StringUtils.cleanPath(mainImageFile.getOriginalFilename());
+                product.setImageUrl(mainImageName);
+            } else {
+                // Trường hợp không upload ảnh chính mới (khi Edit)
+                if (product.getId() != null) {
+                    // Lấy lại tên ảnh cũ từ CSDL để không bị mất
+                    Product existingProduct = productRepository.findById(product.getId()).get();
                     product.setImageUrl(existingProduct.getImageUrl());
                 }
             }
 
-            Product savedProduct = productRepository.save(product);
-            LOGGER.info("Saved product with ID: {}", savedProduct.getId());
-
-            if (!multipartFile.isEmpty()) {
-                String uploadDir = "product-images/" + savedProduct.getId();
-
-                LOGGER.info("Attempting to save file to relative path: {}", uploadDir);
-                try {
-                    saveFile(uploadDir, fileName, multipartFile);
-                    LOGGER.info("Successfully saved file: {}", fileName);
-                } catch (IOException e) {
-                    LOGGER.error("Error saving image file", e);
-                    ra.addFlashAttribute("errorMessage", "Could not save the image file: " + e.getMessage());
+            // 1.2 Xử lý ảnh phụ
+            for (MultipartFile extraFile : extraImageFiles) {
+                if (!extraFile.isEmpty()) {
+                    String extraImageName = StringUtils.cleanPath(extraFile.getOriginalFilename());
+                    product.addExtraImage(extraImageName);
                 }
             }
 
+            // --- BƯỚC 2: Lưu Product vào CSDL ---
+            Product savedProduct = productRepository.save(product);
+            LOGGER.info("Saved/Updated Product with ID: {}", savedProduct.getId());
+
+            // --- BƯỚC 3: Lưu các file ảnh vật lý ---
+            String uploadDir = "product-images/" + savedProduct.getId();
+
+            // 3.1 Lưu file ảnh chính (chỉ khi có file mới được upload)
+            if (!mainImageFile.isEmpty()) {
+                saveFile(uploadDir, savedProduct.getImageUrl(), mainImageFile);
+            }
+
+            // 3.2 Lưu các file ảnh phụ (chỉ khi có file mới được upload)
+            for (MultipartFile extraFile : extraImageFiles) {
+                if (!extraFile.isEmpty()) {
+                    String fileName = StringUtils.cleanPath(extraFile.getOriginalFilename());
+                    saveFile(uploadDir, fileName, extraFile);
+                }
+            }
 
             ra.addFlashAttribute("message", "The product has been saved successfully.");
 
+        } catch (IOException e) {
+            LOGGER.error("Error during file saving process", e);
+            ra.addFlashAttribute("errorMessage", "Could not save image file. Please check server logs for details.");
         } catch (Exception e) {
-            LOGGER.error("Error saving image file", e);
-            ra.addFlashAttribute("errorMessage", "Could not save the image file: " + e.getMessage());
+            LOGGER.error("An unexpected error occurred during product save", e);
+            ra.addFlashAttribute("errorMessage", "An unexpected error occurred.");
         }
 
         return "redirect:/admin/products";
     }
 
 
+
+
+
     private void saveFile(String uploadDir, String fileName, MultipartFile multipartFile) throws IOException {
+        // Paths.get(uploadDir) sẽ tạo ra một đường dẫn tương đối so với thư mục gốc của project
         Path uploadPath = Paths.get(uploadDir);
 
+        // Tạo thư mục nếu nó chưa tồn tại
         if (!Files.exists(uploadPath)) {
-            LOGGER.info("Creating directory: {}", uploadPath);
-            Files.createDirectories(uploadPath);
+            try {
+                Files.createDirectories(uploadPath);
+                LOGGER.info("Created directory: {}", uploadPath.toAbsolutePath());
+            } catch (IOException e) {
+                throw new IOException("Could not create directory: " + uploadPath.toAbsolutePath(), e);
+            }
         }
 
+        // Sao chép file vào thư mục đích
         try (InputStream inputStream = multipartFile.getInputStream()) {
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException ioe) {
-            throw new IOException("Could not save image file: " + fileName, ioe);
+        } catch (IOException e) {
+            throw new IOException("Could not save image file: " + fileName, e);
         }
     }
 
@@ -150,6 +185,8 @@ public class AdminProductController {
             Product product = productRepository.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + id));
             model.addAttribute("product", product);
+            // Gửi danh sách tất cả category ra view
+            model.addAttribute("allCategories", categoryRepository.findAll());
             model.addAttribute("pageTitle", "Edit Product (ID: " + id + ")");
             return "admin/product/form";
         } catch (IllegalArgumentException e) {

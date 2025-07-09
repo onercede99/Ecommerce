@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -22,8 +24,27 @@ public class Product {
     @Column(nullable = false)
     private BigDecimal price;
 
+
     @Column(nullable = true, length = 256)
     private String imageUrl;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProductImage> images = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "brand_id")
+    private Brand brand;
+
+    public void addExtraImage(String imageName) {
+        ProductImage image = new ProductImage();
+        image.setName(imageName);
+        image.setProduct(this);
+        this.images.add(image);
+    }
 
     @Transient
     public String getPhotosImagePath() {

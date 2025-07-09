@@ -35,6 +35,9 @@
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                     <a class="nav-link" th:href="@{/admin/users}">Manage Users</a>
                 </li>
+                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                    <a class="nav-link" th:href="@{/admin/categories}">Category Manage</a>
+                </li>
             </ul>
             <div class="d-flex align-items-center">
                 <a th:href="@{/cart}" class="btn btn-outline-light me-3 position-relative">

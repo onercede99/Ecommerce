@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>An Error Occurred</title>
+</head>
+<body>
+<main layout:fragment="content" class="container my-4">
+        <h1 class="display-1 text-danger">Error</h1>
+        <h2 class="mb-4">Oops! Something went wrong.</h2>
+        <p class="lead">
+            We are sorry, but an unexpected error occurred. Please try again later.
+        </p>
+        <!-- Hiển thị thông tin lỗi chi tiết (chỉ khi cần debug) -->
+        <!--
+        <div th:if="${message}" class="alert alert-danger mt-4">
+            <p>Error details:</p>
+            <p th:text="${'Status: ' + status}"></p>
+            <p th:text="${'Error: ' + error}"></p>
+            <p th:text="${'Message: ' + message}"></p>
+        </div>
+        -->
+        <a th:href="@{/}" class="btn btn-primary mt-3">Go to Homepage</a>
+</main>
+<th:block layout:fragment="css"></th:block>
+<th:block layout:fragment="script"></th:block>
+</body>
+</html>

@@ -31,6 +31,6 @@ public class AdminDashboardController {
     @ResponseBody // Annotation này báo cho Spring trả về JSON, không phải tên view
     public ResponseEntity<Map<String, Object>> getChartData() {
         Map<String, Object> chartData = dashboardService.getChartData();
-        return ResponseEntity.ok(chartData); // Trả về dữ liệu với status 200 OK
+        return ResponseEntity.ok(chartData);
     }
 }
