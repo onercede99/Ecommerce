@@ -1,148 +1,99 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
+      layout:decorate="~{layout/admin_layout}">
 <head>
   <title>Admin Dashboard</title>
 </head>
 <body>
+
+<!-- Toàn bộ nội dung trang, bao gồm cả script, nằm trong fragment này -->
 <section layout:fragment="content">
-  <div class="container">
-    <h1 class="my-4">Admin Dashboard</h1>
-    <div class="row">
-      <!-- Total Users -->
-      <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-primary shadow h-100 py-2">
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Users</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${stats.totalUsers}">0</div>
-              </div>
-              <div class="col-auto">
-                <i class="fas fa-users fa-2x text-gray-300"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+  <h1 class="mb-4">Admin Dashboard</h1>
 
-      <!-- Total Products -->
-      <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-success shadow h-100 py-2">
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Products</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${stats.totalProducts}">0</div>
-              </div>
-              <div class="col-auto">
-                <i class="fas fa-box fa-2x text-gray-300"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Total Orders -->
-      <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-info shadow h-100 py-2">
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Orders</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${stats.totalOrders}">0</div>
-              </div>
-              <div class="col-auto">
-                <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Total Revenue -->
-      <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-warning shadow h-100 py-2">
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Total Revenue (Delivered)</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="'$' + ${#numbers.formatDecimal(stats.totalRevenue, 1, 'COMMA', 2, 'POINT')}">$0.00</div>
-              </div>
-              <div class="col-auto">
-                <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+  <!-- Thẻ thống kê -->
+  <div class="row" th:if="${stats != null}">
+    <div class="col-md-3">
+      <div class="card"><div class="card-body">
+        <h5 class="card-title">TOTAL USERS</h5>
+        <p class="card-text fs-4" th:text="${stats.totalUsers}">5</p>
+      </div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card"><div class="card-body">
+        <h5 class="card-title">TOTAL PRODUCTS</h5>
+        <p class="card-text fs-4" th:text="${stats.totalProducts}">9</p>
+      </div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card"><div class="card-body">
+        <h5 class="card-title">TOTAL ORDERS</h5>
+        <p class="card-text fs-4" th:text="${stats.totalOrders}">13</p>
+      </div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card"><div class="card-body">
+        <h5 class="card-title">TOTAL REVENUE (DELIVERED)</h5>
+        <p class="card-text fs-4" th:text="'$' + ${#numbers.formatDecimal(stats.totalRevenue, 1, 'COMMA', 2, 'POINT')}">$573.97</p>
+      </div></div>
     </div>
   </div>
-  <div class="row mt-4">
-    <div class="col-12">
-      <div class="card shadow mb-4">
-        <div class="card-header py-3">
-          <h6 class="m-0 font-weight-bold text-primary">Monthly Revenue Chart (Current Year)</h6>
-        </div>
-        <div class="card-body">
-          <div class="chart-area">
-            <canvas id="myAreaChart"></canvas>
-          </div>
-        </div>
-      </div>
+
+  <!-- Biểu đồ doanh thu -->
+  <div class="card mt-4">
+    <div class="card-header">
+      Monthly Revenue Chart (Current Year)
+    </div>
+    <div class="card-body">
+      <canvas id="monthlyRevenueChart"></canvas>
     </div>
   </div>
-  </div>
-</section>
-<th:block layout:fragment="scripts">
-  <script>
-    // Script này sẽ được chèn vào cuối trang
-    console.log("Dashboard script is running!"); // Thêm log để kiểm tra
 
-    // Gọi API để lấy dữ liệu
-    fetch('/admin/api/chart-data')
-            .then(response => {
-              if (!response.ok) {
-                throw new Error('Network response was not ok: ' + response.statusText);
-              }
-              return response.json();
-            })
-            .then(data => {
-              console.log("Chart data received:", data); // Thêm log để xem dữ liệu
-              const ctx = document.getElementById('myAreaChart').getContext('2d');
-              if (ctx) {
-                const myAreaChart = new Chart(ctx, {
-                  type: 'bar',
-                  data: {
-                    labels: data.labels,
-                    datasets: [{
-                      label: 'Revenue',
-                      data: data.data,
-                      backgroundColor: 'rgba(78, 115, 223, 0.5)',
-                      borderColor: 'rgba(78, 115, 223, 1)',
-                      borderWidth: 1
-                    }]
-                  },
-                  options: {
-                    scales: {
-                      y: {
-                        beginAtZero: true,
-                        ticks: {
-                          callback: function(value) {
-                            return '$' + value.toLocaleString();
+  <!-- ===== ĐOẠN SCRIPT ĐƯỢC DI CHUYỂN VÀO ĐÂY ===== -->
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    // Mã JavaScript nằm trong CDATA để tránh các vấn đề về parsing của XML/HTML
+    document.addEventListener("DOMContentLoaded", function() {
+      // Lấy thẻ canvas
+      const ctx = document.getElementById('monthlyRevenueChart');
+
+      // Kiểm tra xem canvas có tồn tại không
+      if (ctx) {
+        fetch('/admin/api/chart-data')
+                .then(response => response.json())
+                .then(chartData => {
+                  new Chart(ctx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                      labels: chartData.labels,
+                      datasets: [{
+                        label: 'Revenue ($)',
+                        data: chartData.data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgb(54, 162, 235)',
+                        borderWidth: 1
+                      }]
+                    },
+                    options: {
+                      scales: {
+                        y: {
+                          beginAtZero: true,
+                          ticks: {
+                            callback: function(value) {
+                              return '$' + value.toLocaleString();
+                            }
                           }
                         }
                       }
                     }
-                  }
-                });
-              } else {
-                console.error("Canvas element #myAreaChart not found!");
-              }
-            })
-            .catch(error => console.error('Error fetching or parsing chart data:', error));
+                  });
+                })
+                .catch(error => console.error('Error fetching or rendering chart:', error));
+      }
+    });
+    /*]]>*/
   </script>
-</th:block>
+</section>
+
 </body>
 </html>

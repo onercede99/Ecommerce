@@ -40,10 +40,10 @@ public class SecurityConfig {
                         .antMatchers("/css/**", "/js/**", "/product-images/**").permitAll()
                         .antMatchers("/admin/users/**", "/admin/dashboard").hasRole("ADMIN")
                         .antMatchers("/admin/api/**").hasRole("ADMIN")
-                        .antMatchers("/admin/products/**", "/admin/orders/**").hasAnyRole("ADMIN", "STAFF")
+                        .antMatchers("/admin/products/**", "/admin/orders/**", "/admin/home").hasAnyRole("ADMIN", "STAFF")
                         .antMatchers("/account/**").authenticated()
-
                         .anyRequest().authenticated()
+
 
                 )
                 .formLogin(form -> form

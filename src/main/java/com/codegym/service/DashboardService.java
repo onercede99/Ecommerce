@@ -4,6 +4,8 @@ import com.codegym.dto.MonthlyRevenue;
 import com.codegym.repository.OrderRepository;
 import com.codegym.repository.ProductRepository;
 import com.codegym.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -12,7 +14,10 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class DashboardService {
+public class DashboardService implements IDashboardService{
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
@@ -70,5 +75,24 @@ public class DashboardService {
         chartData.put("data", data);
 
         return chartData;
+    }
+
+    @Override
+    public List<Map<String, Object>> getMonthlyRevenueForCurrentYear() {
+
+        String sql = "SELECT " +
+                "  MONTH(order_date) AS month, " +
+                "  SUM(total_price) AS revenue " +
+                "FROM " +
+                "  orders " +
+                "WHERE " +
+                "  YEAR(order_date) = YEAR(CURDATE()) AND status = 'DELIVERED' " +
+                "GROUP BY " +
+                "  MONTH(order_date) " +
+                "ORDER BY " +
+                "  month;";
+
+        // Thực thi câu query và trả về kết quả
+        return jdbcTemplate.queryForList(sql);
     }
 }

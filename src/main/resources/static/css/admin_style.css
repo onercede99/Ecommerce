@@ -1,0 +1,80 @@
+/* static/css/admin_style.css */
+
+/* --- Import Google Font (Optional, can use system font for speed) --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+/* --- Cài đặt chung --- */
+:root {
+    --admin-bg: #f4f6f9; /* Màu nền xám nhạt của dashboard */
+    --admin-text: #495057;
+    --admin-primary: #007bff;
+    --admin-border: #dee2e6;
+    --admin-sidebar-bg: #343a40;
+    --admin-sidebar-text: #c2c7d0;
+    --admin-sidebar-active: #007bff;
+    --body-font: 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--admin-bg);
+    font-family: var(--body-font);
+    color: var(--admin-text);
+}
+
+/* --- Header --- */
+.admin-header .navbar {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.admin-header .navbar-brand {
+    font-weight: 600;
+}
+
+.admin-header .nav-link {
+    color: rgba(255, 255, 255, 0.75) !important;
+}
+
+.admin-header .nav-link:hover,
+.admin-header .nav-item.active .nav-link {
+    color: #fff !important;
+}
+
+.admin-header .btn-link {
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: none;
+}
+.admin-header .btn-link:hover {
+    color: #fff;
+}
+
+
+/* --- Main Content --- */
+.admin-main {
+    padding: 2rem;
+}
+
+.page-title {
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+/* --- Table Styling --- */
+.table {
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.table thead {
+    background-color: #e9ecef;
+}
+
+/* --- Form Styling --- */
+.card {
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    border: 1px solid var(--admin-border);
+}
+
+/* --- Flash Messages (Thông báo) --- */
+.alert {
+    border-radius: 0.25rem;
+}

@@ -1,0 +1,31 @@
+<!-- templates/fragments/footer.html -->
+<footer class="site-footer" th:fragment="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <h5>About Us</h5>
+        <p>We are a leading provider of quality books for developers and tech enthusiasts around the world.</p>
+      </div>
+      <div class="col-md-4">
+        <h5>Quick Links</h5>
+        <ul class="list-unstyled">
+          <li><a th:href="@{/}">Home</a></li>
+          <li><a th:href="@{/products}">Products</a></li>
+          <!-- Thêm các link khác nếu cần -->
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h5>Contact Us</h5>
+        <ul class="list-unstyled">
+          <li>Email: support@ecommerce.com</li>
+          <li>Phone: +84 123 456 789</li>
+        </ul>
+      </div>
+    </div>
+    <div class="row footer-bottom">
+      <div class="col-md-12 text-center">
+        <p>© 2024 E-Commerce. All Rights Reserved.</p>
+      </div>
+    </div>
+  </div>
+</footer>
