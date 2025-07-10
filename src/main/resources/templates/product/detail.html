@@ -113,16 +113,18 @@
 
         <hr>
 
-        <form th:action="@{/cart/add}" method="post" class="d-flex align-items-center my-4">
+        <div th:action="@{/cart/add}" method="post" class="d-flex align-items-center my-4">
           <input type="hidden" name="productId" th:value="${product.id}" />
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
           <div class="me-3">
             <label for="quantity" class="form-label visually-hidden">Quantity</label>
             <input type="number" name="quantity" id="quantity" value="1" min="1" class="form-control" style="width: 80px;">
           </div>
-          <button type="submit" class="btn btn-primary btn-lg">
+          <button type="button" class="btn btn-primary btn-lg" id="add-to-cart-btn">
             <i class="fas fa-shopping-cart me-2"></i>Add to Cart
           </button>
-        </form>
+        </div>
+        <div id="add-to-cart-alert" class="mt-3">Add to cart success</div>
 
         <div class="mt-4">
           <p th:if="${product.category != null}"><strong>Category:</strong>
@@ -210,6 +212,53 @@
               mainImage.src = newImageSrc;
             }
           });
+        });
+      }
+
+      const addToCartBtn = document.getElementById('add-to-cart-btn');
+      const alertContainer = document.getElementById('add-to-cart-alert');
+
+      if (addToCartBtn) {
+        addToCartBtn.addEventListener('click', function() {
+          const productId = document.getElementById('productId').value;
+          const quantity = document.getElementById('quantity').value;
+
+          // Lấy CSRF token từ meta tag (cần thêm vào layout)
+          const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+          const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+          const formData = new FormData();
+          formData.append('productId', productId);
+          formData.append('quantity', quantity);
+
+          fetch('/api/cart/add', {
+            method: 'POST',
+            headers: {
+              [csrfHeader]: csrfToken
+            },
+            body: new URLSearchParams(formData)
+          })
+                  .then(response => response.json())
+                  .then(data => {
+                    if (data.error) {
+                      // Hiển thị lỗi
+                      alertContainer.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                    } else {
+                      // Cập nhật số lượng trên icon giỏ hàng
+                      const cartCountElement = document.getElementById('cart-item-count');
+                      if (cartCountElement) {
+                        cartCountElement.textContent = data.totalItems;
+                      }
+                      // Hiển thị thông báo thành công
+                      alertContainer.innerHTML = `<div class="alert alert-success">Product added to cart successfully!</div>`;
+                      // Tự động xóa thông báo sau 3 giây
+                      setTimeout(() => { alertContainer.innerHTML = ''; }, 3000);
+                    }
+                  })
+                  .catch(error => {
+                    console.error('Error:', error);
+                    alertContainer.innerHTML = `<div class="alert alert-danger">Could not add product to cart.</div>`;
+                  });
         });
       }
     });

@@ -3,45 +3,62 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/client_layout}">
 <head>
-  <title>Login Page</title>
+  <title>Register Account</title>
 </head>
 <body>
 
-<!-- Nội dung của trang login sẽ được chèn vào fragment 'content' của layout -->
 <section layout:fragment="content">
-  <div class="row justify-content-center">
-    <div class="col-md-6 col-lg-4">
-      <h2 class="text-center mb-4">User Login</h2>
+  <div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-5">
+        <div class="card p-4 shadow-sm">
+          <h2 class="text-center mb-4">Create an Account</h2>
 
-      <!-- Hiển thị thông báo lỗi (nếu có) -->
-      <div th:if="${param.error}" class="alert alert-danger">
-        Invalid username or password.
-      </div>
-      <!-- Hiển thị thông báo đăng xuất thành công (nếu có) -->
-      <div th:if="${param.logout}" class="alert alert-success">
-        You have been logged out.
-      </div>
-      <!-- Hiển thị thông báo đăng ký thành công (nếu có) -->
-      <div th:if="${param.register_success}" class="alert alert-success">
-        Registration successful! Please login.
-      </div>
+          <!-- Form đăng ký -->
+          <!-- th:object="${user}" khớp với tên model trong AuthController -->
+          <form th:action="@{/register}" th:object="${user}" method="post">
 
-      <!-- Form đăng nhập -->
-      <form th:action="@{/login}" method="post">
-        <div class="mb-3">
-          <label for="username" class="form-label">Username</label>
-          <input type="text" id="username" name="username" class="form-control" required autofocus>
+            <!-- Hiển thị lỗi chung từ Controller (ví dụ: email/username đã tồn tại) -->
+            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}">
+            </div>
+
+            <!-- Trường Username -->
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <!-- th:field="*{username}" khớp với trường 'username' trong RegisterDto -->
+              <input type="text" th:field="*{username}" class="form-control" id="username" required>
+              <!-- Hiển thị lỗi validation cho trường 'username' -->
+              <div class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+            </div>
+
+            <!-- Trường Email -->
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <!-- th:field="*{email}" khớp với trường 'email' trong RegisterDto -->
+              <input type="email" th:field="*{email}" class="form-control" id="email" required>
+              <!-- Hiển thị lỗi validation cho trường 'email' -->
+              <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+            </div>
+
+            <!-- Trường Password -->
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <!-- th:field="*{password}" khớp với trường 'password' trong RegisterDto -->
+              <input type="password" th:field="*{password}" class="form-control" id="password" required>
+              <!-- Hiển thị lỗi validation cho trường 'password' -->
+              <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+            </div>
+
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary">Register</button>
+            </div>
+          </form>
+
+          <p class="mt-3 text-center">
+            Already have an account? <a th:href="@{/login}">Login here</a>
+          </p>
         </div>
-        <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
-          <input type="password" id="password" name="password" class="form-control" required>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Sign in</button>
-      </form>
-
-      <p class="mt-3 text-center">
-        Don't have an account? <a th:href="@{/register}">Register here</a>
-      </p>
+      </div>
     </div>
   </div>
 </section>

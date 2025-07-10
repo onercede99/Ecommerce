@@ -22,12 +22,9 @@ public class AdminOrderController {
 
 
 
-    // 1. Hiển thị danh sách tất cả đơn hàng
     @GetMapping
     public String listOrders(Model model) {
-        // Gọi phương thức mới đã được tối ưu hóa
-        List<Order> orders = orderRepository.findAllWithDetails(Sort.by(Sort.Direction.DESC, "orderDate"));
-
+        List<Order> orders = orderRepository.findAllWithUserDetails(Sort.by(Sort.Direction.DESC, "orderDate"));
         model.addAttribute("orders", orders);
         return "admin/order/list";
     }

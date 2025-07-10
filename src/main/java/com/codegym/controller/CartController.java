@@ -21,9 +21,10 @@ public class CartController {
     @PostMapping("/add")
     public String addToCart(@RequestParam("productId") Long productId,
                             @RequestParam(name = "quantity", defaultValue = "1") int quantity,
-                            HttpServletRequest request) { // Dùng HttpServletRequest để lấy session
+                            HttpServletRequest request) {
         cartService.addToCart(productId, quantity, request.getSession());
-        return "redirect:/products";
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/");
     }
 
     @GetMapping

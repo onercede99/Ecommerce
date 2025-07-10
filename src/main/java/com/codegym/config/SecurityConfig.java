@@ -34,10 +34,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
+//                .csrf().disable()
                 .authorizeRequests(authorize -> authorize
                         .antMatchers("/register/**", "/", "/home", "/cart/**","/products", "/checkout", "/order/place", ("/reviews/add")).permitAll()
-                        .antMatchers("/css/**", "/js/**", "/product-images/**").permitAll()
+                        .antMatchers("/css/**", "/js/**", "/product-images/**", "/images/**").permitAll()
                         .antMatchers("/admin/users/**", "/admin/dashboard").hasRole("ADMIN")
                         .antMatchers("/admin/api/**").hasRole("ADMIN")
                         .antMatchers("/admin/products/**", "/admin/orders/**", "/admin/home").hasAnyRole("ADMIN", "STAFF")

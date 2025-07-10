@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Date;
 
 @Controller
 @RequestMapping("/admin/products")
@@ -84,58 +85,61 @@ public class AdminProductController {
     public String saveProduct(@Valid @ModelAttribute("product") Product product,
                               BindingResult result,
                               @RequestParam("imageFile") MultipartFile mainImageFile,
-                              @RequestParam("extraImageFiles") MultipartFile[] extraImageFiles,
+                              @RequestParam(name = "extraImageFiles", required = false) MultipartFile[] extraImageFiles,
                               RedirectAttributes ra,
                               Model model) {
         if (result.hasErrors()) {
             model.addAttribute("pageTitle", product.getId() == null ? "Add New Product" : "Edit Product");
+            model.addAttribute("allCategories", categoryRepository.findAll()); // Thêm lại để form không bị lỗi
             return "admin/product/form";
         }
 
         try {
-            // --- BƯỚC 1: Xử lý và cập nhật Entity (chưa lưu vào DB) ---
-
-            // 1.1 Xử lý ảnh chính
+            // ---- XỬ LÝ ẢNH CHÍNH ----
             if (!mainImageFile.isEmpty()) {
-                // Trường hợp có upload ảnh chính mới
-                String mainImageName = StringUtils.cleanPath(mainImageFile.getOriginalFilename());
-                product.setImageUrl(mainImageName);
+                String originalFileName = StringUtils.cleanPath(mainImageFile.getOriginalFilename());
+                String sanitizedFileName = new Date().getTime() + "_" + originalFileName.replaceAll("[^a-zA-Z0-9.-]", "_");
+                product.setImageUrl(sanitizedFileName);
             } else {
-                // Trường hợp không upload ảnh chính mới (khi Edit)
-                if (product.getId() != null) {
-                    // Lấy lại tên ảnh cũ từ CSDL để không bị mất
-                    Product existingProduct = productRepository.findById(product.getId()).get();
-                    product.setImageUrl(existingProduct.getImageUrl());
+                if (product.getId() != null) { // Trường hợp edit mà không thay ảnh
+                    productRepository.findById(product.getId()).ifPresent(existingProd -> product.setImageUrl(existingProd.getImageUrl()));
                 }
             }
 
-            // 1.2 Xử lý ảnh phụ
-            for (MultipartFile extraFile : extraImageFiles) {
-                if (!extraFile.isEmpty()) {
-                    String extraImageName = StringUtils.cleanPath(extraFile.getOriginalFilename());
-                    product.addExtraImage(extraImageName);
-                }
-            }
-
-            // --- BƯỚC 2: Lưu Product vào CSDL ---
+            // ---- LƯU SẢN PHẨM VÀO DB ĐỂ LẤY ID ----
+            // Quan trọng: Phải lưu trước để có ID, dùng ID này tạo thư mục
             Product savedProduct = productRepository.save(product);
             LOGGER.info("Saved/Updated Product with ID: {}", savedProduct.getId());
 
-            // --- BƯỚC 3: Lưu các file ảnh vật lý ---
-            String uploadDir = "product-images/" + savedProduct.getId();
+            // ---- TẠO ĐƯỜNG DẪN LƯU TRỮ ----
+            Path projectRootPath = Paths.get("").toAbsolutePath();
+            Path uploadPath = projectRootPath.resolve("product-images").resolve(String.valueOf(savedProduct.getId()));
 
-            // 3.1 Lưu file ảnh chính (chỉ khi có file mới được upload)
+            // ---- LƯU FILE ẢNH CHÍNH ----
             if (!mainImageFile.isEmpty()) {
-                saveFile(uploadDir, savedProduct.getImageUrl(), mainImageFile);
+                saveFile(uploadPath, product.getImageUrl(), mainImageFile);
             }
 
-            // 3.2 Lưu các file ảnh phụ (chỉ khi có file mới được upload)
+            // ---- XỬ LÝ VÀ LƯU CÁC FILE ẢNH PHỤ (LOGIC ĐÚNG) ----
+            Path extrasUploadPath = uploadPath.resolve("extras");
             for (MultipartFile extraFile : extraImageFiles) {
                 if (!extraFile.isEmpty()) {
-                    String fileName = StringUtils.cleanPath(extraFile.getOriginalFilename());
-                    saveFile(uploadDir, fileName, extraFile);
+                    // 1. Tạo tên file an toàn cho ảnh phụ
+                    String originalFileName = StringUtils.cleanPath(extraFile.getOriginalFilename());
+                    String sanitizedFileName = new Date().getTime() + "_" + originalFileName.replaceAll("[^a-zA-Z0-9.-]", "_");
+
+                    // 2. Thêm ảnh phụ vào đối tượng Product (để lưu vào DB)
+                    // Ghi chú: Cần phải lưu lại product sau khi thêm ảnh phụ
+                    savedProduct.addExtraImage(sanitizedFileName);
+
+                    // 3. Lưu file vật lý vào thư mục extras
+                    saveFile(extrasUploadPath, sanitizedFileName, extraFile);
                 }
             }
+
+            // Sau khi thêm các ảnh phụ, lưu lại product một lần nữa để cập nhật danh sách ảnh phụ
+            productRepository.save(savedProduct);
+
 
             ra.addFlashAttribute("message", "The product has been saved successfully.");
 
@@ -144,7 +148,7 @@ public class AdminProductController {
             ra.addFlashAttribute("errorMessage", "Could not save image file. Please check server logs for details.");
         } catch (Exception e) {
             LOGGER.error("An unexpected error occurred during product save", e);
-            ra.addFlashAttribute("errorMessage", "An unexpected error occurred.");
+            ra.addFlashAttribute("errorMessage", "An unexpected error occurred: " + e.getMessage());
         }
 
         return "redirect:/admin/products";
@@ -154,21 +158,16 @@ public class AdminProductController {
 
 
 
-    private void saveFile(String uploadDir, String fileName, MultipartFile multipartFile) throws IOException {
+    private void saveFile(Path uploadPath, String fileName, MultipartFile multipartFile) throws IOException {
         // Paths.get(uploadDir) sẽ tạo ra một đường dẫn tương đối so với thư mục gốc của project
-        Path uploadPath = Paths.get(uploadDir);
+//        Path uploadPath = Paths.get(uploadDir);
 
         // Tạo thư mục nếu nó chưa tồn tại
         if (!Files.exists(uploadPath)) {
-            try {
-                Files.createDirectories(uploadPath);
-                LOGGER.info("Created directory: {}", uploadPath.toAbsolutePath());
-            } catch (IOException e) {
-                throw new IOException("Could not create directory: " + uploadPath.toAbsolutePath(), e);
-            }
+            Files.createDirectories(uploadPath);
+            LOGGER.info("Created directory: {}", uploadPath);
         }
 
-        // Sao chép file vào thư mục đích
         try (InputStream inputStream = multipartFile.getInputStream()) {
             Path filePath = uploadPath.resolve(fileName);
             Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);

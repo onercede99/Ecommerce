@@ -8,7 +8,14 @@
     </ul>
     <!-- Menu bên phải -->
     <ul class="navbar-nav">
-      <li class="nav-item"><a class="nav-link" th:href="@{/cart}">Cart</a></li>
+      <li class="nav-item"><a class="nav-link cart-link" th:href="@{/cart}">
+        Cart
+        <!-- Thẻ span cho số đếm, chỉ hiển thị khi cartItemCount > 0 -->
+        <span th:if="${cartItemCount > 0}"
+              th:text="${cartItemCount}"
+              class="cart-badge">
+            </span>
+      </a></li>
       <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
         <a class="nav-link" th:href="@{/admin/home}" style="color: #ffc107;">
           Admin Panel

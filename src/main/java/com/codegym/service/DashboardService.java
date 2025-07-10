@@ -92,7 +92,25 @@ public class DashboardService implements IDashboardService{
                 "ORDER BY " +
                 "  month;";
 
-        // Thực thi câu query và trả về kết quả
         return jdbcTemplate.queryForList(sql);
+    }
+
+    public long getTotalUsers() {
+        return userRepository.count();
+    }
+
+    public long getTotalProducts() {
+        return productRepository.count();
+    }
+
+    public long getTotalOrders() {
+        return orderRepository.count();
+    }
+
+    public BigDecimal getTotalRevenue() {
+
+        BigDecimal total = orderRepository.findTotalRevenueOfDeliveredOrders(); // Ví dụ
+
+        return (total == null) ? BigDecimal.ZERO : total;
     }
 }

@@ -22,7 +22,10 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "ORDER BY MONTH(o.orderDate)")
     List<MonthlyRevenue> findMonthlyRevenue();
 
-    @Query("SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.user LEFT JOIN FETCH o.orderDetails")
-    List<Order> findAllWithDetails(Sort sort);
+    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.user")
+    List<Order> findAllWithUserDetails(Sort sort);
+
+    @Query("SELECT SUM(o.totalPrice) FROM Order o WHERE o.status = 'DELIVERED'")
+    BigDecimal findTotalRevenueOfDeliveredOrders();
 
 }

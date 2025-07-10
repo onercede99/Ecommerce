@@ -15,10 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
-public class OrderService {
+public class OrderService implements IOrderService{
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
@@ -78,5 +79,25 @@ public class OrderService {
         cartService.clearCart(session);
 
         return savedOrder;
+    }
+    @Override
+    public long count() {
+        // JpaRepository đã cung cấp sẵn phương thức count()
+        return orderRepository.count();
+    }
+
+    @Override
+    public BigDecimal calculateTotalRevenue() {
+        // Gọi phương thức từ repository
+        BigDecimal total = orderRepository.findTotalRevenue();
+
+        // XỬ LÝ QUAN TRỌNG NHẤT:
+        // Nếu repository trả về null (vì không có đơn hàng nào),
+        // chúng ta sẽ trả về BigDecimal.ZERO để tránh lỗi NullPointerException ở Controller.
+        if (total == null) {
+            return BigDecimal.ZERO;
+        }
+
+        return total;
     }
 }

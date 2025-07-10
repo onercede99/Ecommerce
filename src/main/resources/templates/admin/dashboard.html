@@ -7,50 +7,83 @@
 </head>
 <body>
 
-<!-- Toàn bộ nội dung trang, bao gồm cả script, nằm trong fragment này -->
 <section layout:fragment="content">
-  <h1 class="mb-4">Admin Dashboard</h1>
+  <div class="container-fluid mt-4">
+    <h1 class="mb-4">Admin Dashboard</h1>
 
-  <!-- Thẻ thống kê -->
-  <div class="row" th:if="${stats != null}">
-    <div class="col-md-3">
-      <div class="card"><div class="card-body">
-        <h5 class="card-title">TOTAL USERS</h5>
-        <p class="card-text fs-4" th:text="${stats.totalUsers}">5</p>
-      </div></div>
+    <!-- ================== KHỐI THẺ THỐNG KÊ ĐÃ SỬA ================== -->
+    <div class="row" th:if="${stats != null}">
+      <!-- Thẻ thống kê cho Users -->
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Users</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${stats.totalUsers}">0</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thẻ thống kê cho Products -->
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Products</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${stats.totalProducts}">0</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thẻ thống kê cho Orders -->
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Orders</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${stats.totalOrders}">0</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thẻ thống kê cho Revenue -->
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Total Revenue (Delivered)</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="'$' + ${#numbers.formatDecimal(stats.totalRevenue, 1, 'COMMA', 2, 'POINT')}">$0.00</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="col-md-3">
-      <div class="card"><div class="card-body">
-        <h5 class="card-title">TOTAL PRODUCTS</h5>
-        <p class="card-text fs-4" th:text="${stats.totalProducts}">9</p>
-      </div></div>
-    </div>
-    <div class="col-md-3">
-      <div class="card"><div class="card-body">
-        <h5 class="card-title">TOTAL ORDERS</h5>
-        <p class="card-text fs-4" th:text="${stats.totalOrders}">13</p>
-      </div></div>
-    </div>
-    <div class="col-md-3">
-      <div class="card"><div class="card-body">
-        <h5 class="card-title">TOTAL REVENUE (DELIVERED)</h5>
-        <p class="card-text fs-4" th:text="'$' + ${#numbers.formatDecimal(stats.totalRevenue, 1, 'COMMA', 2, 'POINT')}">$573.97</p>
-      </div></div>
+
+    <!-- ================== BIỂU ĐỒ DOANH THU ================== -->
+    <div class="card mt-4">
+      <div class="card-header">
+        Monthly Revenue Chart (Current Year)
+      </div>
+      <div class="card-body">
+        <canvas id="monthlyRevenueChart"></canvas>
+      </div>
     </div>
   </div>
 
-  <!-- Biểu đồ doanh thu -->
-  <div class="card mt-4">
-    <div class="card-header">
-      Monthly Revenue Chart (Current Year)
-    </div>
-    <div class="card-body">
-      <canvas id="monthlyRevenueChart"></canvas>
-    </div>
-  </div>
-
-  <!-- ===== ĐOẠN SCRIPT ĐƯỢC DI CHUYỂN VÀO ĐÂY ===== -->
-  <script th:inline="javascript">
+  <!-- ===== SCRIPT ĐỂ VẼ BIỂU ĐỒ ===== -->
+  <!-- Đặt script ở cuối cùng để đảm bảo các element HTML đã được tải -->
+  <script layout:fragment="scripts" th:inline="javascript">
     /*<![CDATA[*/
     // Mã JavaScript nằm trong CDATA để tránh các vấn đề về parsing của XML/HTML
     document.addEventListener("DOMContentLoaded", function() {
@@ -59,16 +92,22 @@
 
       // Kiểm tra xem canvas có tồn tại không
       if (ctx) {
+        // Fetch data từ API endpoint
         fetch('/admin/api/chart-data')
-                .then(response => response.json())
+                .then(response => {
+                  if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                  }
+                  return response.json();
+                })
                 .then(chartData => {
-                  new Chart(ctx.getContext('2d'), {
+                  new Chart(ctx, { // Rút gọn ctx.getContext('2d')
                     type: 'bar',
                     data: {
-                      labels: chartData.labels,
+                      labels: chartData.labels, // ["Tháng 1", "Tháng 2", ...]
                       datasets: [{
                         label: 'Revenue ($)',
-                        data: chartData.data,
+                        data: chartData.data, // [100, 200, ...]
                         backgroundColor: 'rgba(54, 162, 235, 0.5)',
                         borderColor: 'rgb(54, 162, 235)',
                         borderWidth: 1

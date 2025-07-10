@@ -53,7 +53,13 @@ public class Product {
 
     @Transient
     public String getPhotosImagePath() {
-        if (imageUrl == null || id == null) return null;
-        return "/product-images/" + this.id + "/" + this.imageUrl;
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            if (id != null) {
+                return "/product-images/" + this.id + "/" + this.imageUrl;
+            }
+        }
+
+        // Nếu có ảnh, trả về đường dẫn đúng
+        return "/images/default-product.png";
     }
 }

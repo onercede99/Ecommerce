@@ -48,8 +48,12 @@
         <label for="imageFile" class="form-label">Product Image</label>
         <input type="file" name="imageFile" class="form-control" id="imageFile" accept="image/png, image/jpeg" />
       </div>
+      <div class="mb-3">
+        <label for="extraImageFiles" class="form-label">Extra Images (Optional)</label>
+        <!-- Thêm input này với name="extraImageFiles" và thuộc tính 'multiple' -->
+        <input type="file" name="extraImageFiles" class="form-control" id="extraImageFiles" accept="image/png, image/jpeg" multiple />
+      </div>
 
-      <!-- Hiển thị ảnh hiện tại nếu là edit mode -->
       <div th:if="${product.id != null and product.imageUrl != null}" class="mb-3">
         <label class="form-label">Current Image:</label>
         <div>

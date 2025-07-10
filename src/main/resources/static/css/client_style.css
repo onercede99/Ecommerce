@@ -200,3 +200,24 @@ main {
     margin-top: 1.5rem;
     font-size: 0.9rem;
 }
+
+.cart-link {
+    position: relative; /* Rất quan trọng: làm mốc để định vị phần tử con */
+    display: inline-block; /* Đảm bảo nó có kích thước để chứa badge */
+}
+
+/* Định kiểu và định vị cho số đếm (badge) */
+.cart-badge {
+    position: absolute;   /* Quan trọng: định vị tuyệt đối so với .cart-link */
+    top: 0px;             /* Di chuyển lên trên */
+    right: -12px;         /* Di chuyển sang phải */
+
+    /* Các thuộc tính để làm cho nó đẹp hơn */
+    background-color: red;
+    color: white;
+    border-radius: 50%; /* Bo tròn thành hình tròn */
+    padding: 2px 6px;   /* Tạo khoảng đệm bên trong */
+    font-size: 10px;    /* Cỡ chữ nhỏ */
+    font-weight: bold;
+    line-height: 1;     /* Đảm bảo chữ ở giữa theo chiều dọc */
+}

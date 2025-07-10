@@ -1,6 +1,10 @@
 package com.codegym.controller;
 
+import com.codegym.dto.DashboardStatsDto;
+import com.codegym.repository.ProductRepository;
+import com.codegym.repository.UserRepository;
 import com.codegym.service.DashboardService;
+import com.codegym.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.Map;
 
@@ -18,16 +24,35 @@ import java.util.Map;
 public class AdminDashboardController {
 
     private final DashboardService dashboardService;
+    private final OrderService orderService;
+    private final UserRepository userRepository;
+    private final ProductRepository productRepository;
 
-    public AdminDashboardController(DashboardService dashboardService) {
+    public AdminDashboardController(DashboardService dashboardService, OrderService orderService,
+                                    UserRepository userRepository, ProductRepository productRepository) {
         this.dashboardService = dashboardService;
+        this.orderService = orderService;
+        this.userRepository = userRepository;
+        this.productRepository = productRepository;
     }
 
     @GetMapping("/dashboard")
     public String showDashboard(Model model) {
-        Map<String, Object> stats = dashboardService.getDashboardStatistics();
+
+        DashboardStatsDto stats = new DashboardStatsDto();
+
+
+        stats.setTotalUsers(dashboardService.getTotalUsers());
+        stats.setTotalProducts(dashboardService.getTotalProducts());
+        stats.setTotalOrders(dashboardService.getTotalOrders());
+        stats.setTotalRevenue(dashboardService.getTotalRevenue());
+
+        // 3. Thêm ĐỐI TƯỢNG DUY NHẤT 'stats' vào model
         model.addAttribute("stats", stats);
-        return "admin/dashboard";
+
+        // ---- KẾT THÚC SỬA ĐỔI ----
+
+        return "admin/dashboard"; // Trả về view
     }
 
     @GetMapping("/api/chart-data")
