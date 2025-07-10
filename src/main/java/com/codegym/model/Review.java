@@ -2,29 +2,24 @@ package com.codegym.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-// THAY ĐỔI: import từ javax, không phải jakarta
 import javax.persistence.*;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reviews")
-@Getter // THÊM: Lombok tự tạo getter
-@Setter // THÊM: Lombok tự tạo setter
+@Getter
+@Setter
+@EntityListeners(AuditingEntityListener.class) // Tự động cập nhật ngày tạo/sửa
 public class Review {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
-    private int rating; // Điểm đánh giá từ 1-5
-
-    @Lob
-    private String comment;
-
-    @Column(nullable = false)
-    private LocalDateTime reviewDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
@@ -34,9 +29,16 @@ public class Review {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @PrePersist
-    protected void onCreate() {
-        this.reviewDate = LocalDateTime.now();
-    }
+    @Min(1)
+    @Max(5)
+    @Column(nullable = false)
+    private int rating; // Điểm sao từ 1 đến 5
 
+    @NotEmpty(message = "Nội dung đánh giá không được để trống")
+    @Column(length = 1000)
+    private String comment;
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime reviewDate;
 }

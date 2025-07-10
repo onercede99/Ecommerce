@@ -32,16 +32,17 @@
             Order Status
           </div>
           <div class="card-body">
-            <form th:action="@{/admin/orders/update-status}" method="post" class="d-flex">
+            <form th:action="@{/admin/orders/update-status}" method="post">
               <input type="hidden" name="orderId" th:value="${order.id}">
-              <select name="status" class="form-select me-2">
-                <option th:selected="${order.status == 'PENDING'}" value="PENDING">Pending</option>
-                <option th:selected="${order.status == 'PROCESSING'}" value="PROCESSING">Processing</option>
-                <option th:selected="${order.status == 'SHIPPED'}" value="SHIPPED">Shipped</option>
-                <option th:selected="${order.status == 'DELIVERED'}" value="DELIVERED">Delivered</option>
-                <option th:selected="${order.status == 'CANCELED'}" value="CANCELED">Canceled</option>
-              </select>
-              <button type="submit" class="btn btn-primary">Update</button>
+              <div class="input-group">
+                <select name="status" class="form-select">
+                  <option value="PENDING" th:selected="${order.status == 'PENDING'}">Pending</option>
+                  <option value="SHIPPED" th:selected="${order.status == 'SHIPPED'}">Shipped</option>
+                  <option value="DELIVERED" th:selected="${order.status == 'DELIVERED'}">Delivered</option>
+                  <option value="CANCELLED" th:selected="${order.status == 'CANCELLED'}">Cancelled</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Update</button>
+              </div>
             </form>
           </div>
         </div>

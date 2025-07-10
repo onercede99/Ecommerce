@@ -5,21 +5,54 @@
       layout:decorate="~{layout/client_layout}">
 
 <head>
-  <title th:text="${product != null ? product.name : 'Không Tìm Thấy Sản Phẩm'}">Chi Tiết Sản Phẩm</title>
-  <style>
-    /* CSS không thay đổi, giữ nguyên từ phiên bản trước */
-    .thumbnail-item { cursor: pointer; border: 2px solid transparent; padding: 2px; border-radius: 4px; transition: border-color 0.3s; }
-    .thumbnail-item.active, .thumbnail-item:hover { border-color: #0d6efd; }
-    .product-price { font-size: 2.25rem; font-weight: 700; color: #0d6efd; }
-  </style>
+  <title th:text="${product.name}">Chi Tiết Sản Phẩm</title>
+  <th:block layout:fragment="styles">
+    <style>
+      /* ... các style khác như .thumbnail-item giữ nguyên ... */
+      .thumbnail-item { cursor: pointer; border: 2px solid transparent; padding: 2px; border-radius: 4px; transition: border-color 0.3s; }
+      .thumbnail-item.active, .thumbnail-item:hover { border-color: #0d6efd; }
+      .product-price { font-size: 2.25rem; font-weight: 700; color: #0d6efd; }
+      .star-rating .fa-star { color: #ffc107; }
+
+      /* ============================================= */
+      /* === CSS QUAN TRỌNG CHO HỆ THỐNG CHỌN SAO === */
+      /* ============================================= */
+      .rating-input-group {
+        display: inline-block;
+        border: none;
+      }
+      /* Ẩn các radio button mặc định */
+      .rating-input-group > input {
+        display: none;
+      }
+      /* Style cho các ngôi sao (label) */
+      .rating-input-group > label {
+        float: right; /* Đảo ngược thứ tự để CSS selector ~ hoạt động */
+        cursor: pointer;
+        color: #ddd;
+        font-size: 2.5rem; /* Tăng kích thước sao cho dễ click */
+        transition: color 0.2s;
+      }
+      /* Tô màu sao khi được hover */
+      .rating-input-group:not(:checked) > label:hover,
+      .rating-input-group:not(:checked) > label:hover ~ label {
+        color: #ffc107;
+      }
+      /* Tô màu sao đã được chọn */
+      .rating-input-group > input:checked ~ label {
+        color: #ffc107;
+      }
+    </style>
+  </th:block>
 </head>
 
 <body>
 <section layout:fragment="content" class="container my-5">
 
+  <!-- Nội dung chính nếu tìm thấy sản phẩm -->
   <div th:if="${product != null}">
     <div class="row">
-      <!-- ===== CỘT TRÁI: THƯ VIỆN ẢNH ===== -->
+      <!-- CỘT TRÁI: THƯ VIỆN ẢNH -->
       <div class="col-lg-6">
         <div class="mb-3">
           <img th:src="@{${product.getPhotosImagePath()}}" class="img-fluid rounded border" id="mainProductImage" alt="Ảnh chính của sản phẩm" style="max-height: 500px; width: 100%; object-fit: contain;">
@@ -34,38 +67,26 @@
         </div>
       </div>
 
-      <!-- ===== CỘT PHẢI: THÔNG TIN SẢN PHẨM ===== -->
+      <!-- CỘT PHẢI: THÔNG TIN SẢN PHẨM -->
       <div class="col-lg-6">
         <h1 class="fw-bold" th:text="${product.name}">Tên Sản Phẩm</h1>
-        <p class="text-muted" th:if="${product.shortDescription}" th:text="${product.shortDescription}">Mô tả ngắn gọn, hấp dẫn.</p>
-
-        <!-- VIỆT HÓA GIÁ TIỀN -->
-        <div class="product-price my-3" th:text="${#numbers.formatDecimal(product.price, 0, 'POINT', 0, 'COMMA')} + ' ₫'">999.000 ₫</div>
-
+        <p class="text-muted" th:if="${product.shortDescription}" th:text="${product.shortDescription}"></p>
+        <div class="product-price my-3" th:text="${#numbers.formatDecimal(product.price, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></div>
         <hr>
-
-        <form th:action="@{/cart/add}" method="post" id="add-to-cart-form">
+        <form th:action="@{/cart/add}" method="post">
           <input type="hidden" name="productId" th:value="${product.id}">
           <div class="d-flex align-items-center my-4">
             <div class="me-3">
               <label for="quantity" class="form-label me-2 fw-bold">Số lượng:</label>
               <input type="number" name="quantity" id="quantity" value="1" min="1" class="form-control" style="width: 80px;">
             </div>
-            <button type="submit" class="btn btn-primary btn-lg flex-grow-1">
-              <i class="fas fa-shopping-cart me-2"></i>Thêm vào giỏ hàng
-            </button>
+            <button type="submit" class="btn btn-primary btn-lg flex-grow-1"><i class="fas fa-shopping-cart me-2"></i>Thêm vào giỏ hàng</button>
           </div>
         </form>
-        <div id="add-to-cart-alert" class="mt-2"></div>
-
         <div class="mt-4 text-secondary">
           <p th:if="${product.category != null}" class="mb-1">
             <strong>Danh mục:</strong>
-            <a th:href="@{/products(categoryId=${product.category.id})}" th:text="${product.category.name}" class="text-decoration-none">Tên danh mục</a>
-          </p>
-          <p th:if="${product.brand != null}" class="mb-1">
-            <strong>Thương hiệu:</strong>
-            <a th:href="@{/products(brandId=${product.brand.id})}" th:text="${product.brand.name}" class="text-decoration-none">Tên thương hiệu</a>
+            <a th:href="@{/products(categoryId=${product.category.id})}" th:text="${product.category.name}" class="text-decoration-none"></a>
           </p>
         </div>
       </div>
@@ -77,41 +98,95 @@
     <div class="row">
       <div class="col-12">
         <ul class="nav nav-tabs" id="productTab" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description-pane" type="button">Mô Tả Chi Tiết</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews-pane" type="button">Đánh Giá (<span th:text="${summary?.totalReviews ?: 0}">0</span>)</button>
-          </li>
+          <li class="nav-item" role="presentation"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#description-pane" type="button">Mô Tả Chi Tiết</button></li>
+          <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#reviews-pane" type="button">Đánh Giá (<span th:text="${summary?.totalReviews ?: 0}">0</span>)</button></li>
         </ul>
         <div class="tab-content border border-top-0 p-4 rounded-bottom">
+          <!-- Tab Mô tả -->
           <div class="tab-pane fade show active" id="description-pane" role="tabpanel">
-            <div th:utext="${product.description}">Nội dung mô tả chi tiết của sản phẩm.</div>
+            <div th:utext="${product.description}"></div>
           </div>
+          <!-- Tab Đánh giá -->
           <div class="tab-pane fade" id="reviews-pane" role="tabpanel">
-            <h4>Đánh Giá Của Khách Hàng</h4>
-            <p>Tính năng này sẽ sớm được cập nhật!</p>
-          </div>
-        </div>
-      </div>
-    </div>
+            <div class="row">
+              <!-- Cột trái: Danh sách đánh giá -->
+              <div class="col-md-7 border-end pe-4">
+                <h4 class="mb-4">Đánh Giá Từ Khách Hàng</h4>
+                <div th:if="${reviewPage == null or reviewPage.empty}" class="alert alert-info">Chưa có đánh giá nào cho sản phẩm này.</div>
+                <div th:unless="${reviewPage == null or reviewPage.empty}">
+                  <div th:each="review : ${reviewPage.content}" class="d-flex mb-4 border-bottom pb-3">
+                    <div class="flex-shrink-0 me-3"><i class="fas fa-user-circle fa-3x text-secondary"></i></div>
+                    <div class="flex-grow-1">
+                      <h5 class="mt-0 mb-1" th:text="${review.user.username}"></h5>
+                      <div class="star-rating mb-2">
+                        <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                          <i class="fa-star" th:classappend="${i <= review.rating} ? 'fas text-warning' : 'far text-muted'"></i>
+                        </th:block>
+                      </div>
+                      <p class="mb-1" th:text="${review.comment}"></p>
+                      <small class="text-muted" th:text="${#temporals.format(review.reviewDate, 'HH:mm - dd/MM/yyyy')}"></small>
+                    </div>
+                  </div>
+                  <!-- Phân trang cho review -->
+                  <nav th:if="${reviewPage.totalPages > 1}" aria-label="Review Paging">
+                    <ul class="pagination justify-content-center mt-3">
+                      <li class="page-item" th:classappend="${reviewPage.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/products/{id}(id=${product.id}, reviewPage=${reviewPage.number - 1})}">«</a>
+                      </li>
+                      <li class="page-item" th:each="i : ${#numbers.sequence(0, reviewPage.totalPages - 1)}" th:classappend="${i == reviewPage.number} ? 'active'">
+                        <a class="page-link" th:href="@{/products/{id}(id=${product.id}, reviewPage=${i})}" th:text="${i + 1}"></a>
+                      </li>
+                      <li class="page-item" th:classappend="${reviewPage.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/products/{id}(id=${product.id}, reviewPage=${reviewPage.number + 1})}">»</a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+              <!-- Cột phải: Form viết đánh giá -->
+              <div class="col-md-5 ps-4">
+                <h4 class="mb-4">Viết Đánh Giá Của Bạn</h4>
+                <div sec:authorize="isAuthenticated()">
+                  <div th:if="${reviewSuccess}" class="alert alert-success" th:text="${reviewSuccess}"></div>
+                  <div th:if="${reviewError}" class="alert alert-danger" th:text="${reviewError}"></div>
+                  <form th:action="@{/reviews/add/{productId}(productId=${product.id})}" th:object="${newReview}" method="post">
+                    <!-- Phần chọn sao -->
+                    <div class="mb-3">
+                      <label class="form-label d-block fw-bold">Chất lượng sản phẩm:</label>
+                      <div class="rating-input-group">
+                        <!-- Thứ tự input phải từ 5 đến 1 để CSS :hover ~ hoạt động đúng -->
+                        <input type="radio" id="star5" th:field="*{rating}" value="5" />
+                        <label for="star5" title="5 sao"><i class="fas fa-star"></i></label>
 
-    <!-- ===== PHẦN SẢN PHẨM LIÊN QUAN ===== -->
-    <div class="row mt-5" th:if="${relatedProducts != null and !relatedProducts.isEmpty()}">
-      <div class="col-12">
-        <h3 class="mb-4">Sản Phẩm Liên Quan</h3>
-      </div>
-      <!-- Lặp qua sản phẩm liên quan (giữ nguyên logic) -->
-      <div class="col-lg-3 col-md-4 col-6 mb-4" th:each="related : ${relatedProducts}">
-        <div class="card h-100 product-card">
-          <a th:href="@{/products/{id}(id=${related.id})}">
-            <img th:src="@{${related.getPhotosImagePath()}}" class="card-img-top" th:alt="${related.name}">
-          </a>
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title">
-              <a th:href="@{/products/{id}(id=${related.id})}" th:text="${related.name}" class="text-decoration-none text-dark">Tên sản phẩm</a>
-            </h5>
-            <p class="card-text price mt-auto fw-bold text-primary" th:text="${#numbers.formatDecimal(related.price, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></p>
+                        <input type="radio" id="star4" th:field="*{rating}" value="4" />
+                        <label for="star4" title="4 sao"><i class="fas fa-star"></i></label>
+
+                        <input type="radio" id="star3" th:field="*{rating}" value="3" />
+                        <label for="star3" title="3 sao"><i class="fas fa-star"></i></label>
+
+                        <input type="radio" id="star2" th:field="*{rating}" value="2" />
+                        <label for="star2" title="2 sao"><i class="fas fa-star"></i></label>
+
+                        <input type="radio" id="star1" th:field="*{rating}" value="1" />
+                        <label for="star1" title="1 sao"><i class="fas fa-star"></i></label>
+                      </div>
+                      <!-- Sử dụng is-invalid của Bootstrap để làm nổi bật lỗi -->
+                      <div class="text-danger mt-2" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}"></div>
+                    </div>
+                    <!-- Phần nhập bình luận -->
+                    <div class="mb-3">
+                      <label for="comment" class="form-label fw-bold">Nội dung đánh giá:</label>
+                      <!-- Thêm class is-invalid khi có lỗi -->
+                      <textarea th:field="*{comment}" class="form-control" th:classappend="${#fields.hasErrors('comment')} ? 'is-invalid'" id="comment" rows="4" placeholder="Chia sẻ cảm nhận của bạn về sản phẩm..."></textarea>
+                      <!-- Thông báo lỗi của Bootstrap -->
+                      <div class="invalid-feedback" th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}"></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Gửi Đánh Giá</button>
+                  </form>
+                </div>
+                <div sec:authorize="!isAuthenticated()"><div class="alert alert-warning">Vui lòng <a th:href="@{/login}" class="alert-link">đăng nhập</a> để viết đánh giá.</div></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -120,22 +195,19 @@
 
   <!-- Thông báo nếu không tìm thấy sản phẩm -->
   <div th:if="${product == null}" class="alert alert-danger text-center">
-    <h2>Không Tìm Thấy Sản Phẩm</h2>
-    <p>Sản phẩm bạn đang tìm kiếm không tồn tại.</p>
-    <a th:href="@{/}" class="btn btn-primary">Về Trang Chủ</a>
+    <h2>Không Tìm Thấy Sản Phẩm</h2><a th:href="@{/}" class="btn btn-primary mt-3">Về Trang Chủ</a>
   </div>
 </section>
 
-<!-- ============================================= -->
-<!-- JAVASCRIPT RIÊNG CHO TRANG NÀY                -->
-<!-- ============================================= -->
+<!-- Script riêng cho trang này -->
 <th:block layout:fragment="scripts">
   <script th:inline="javascript">
     /*<![CDATA[*/
     document.addEventListener('DOMContentLoaded', function() {
-      // Logic cho Image Gallery (giữ nguyên, không cần thay đổi)
+      // === Logic cho Image Gallery ===
       const mainImage = document.getElementById('mainProductImage');
       const thumbnails = document.querySelectorAll('.thumbnail-item img');
+
       if (mainImage && thumbnails.length > 0) {
         thumbnails.forEach(thumb => {
           thumb.addEventListener('click', function() {
@@ -143,16 +215,6 @@
             this.parentElement.classList.add('active');
             mainImage.src = this.src;
           });
-        });
-      }
-
-      // Logic cho thông báo khi thêm vào giỏ hàng
-      const addToCartForm = document.getElementById('add-to-cart-form');
-      if(addToCartForm) {
-        addToCartForm.addEventListener('submit', function(e) {
-          const alertDiv = document.getElementById('add-to-cart-alert');
-          // VIỆT HÓA THÔNG BÁO
-          alertDiv.innerHTML = '<div class="alert alert-info">Đang thêm vào giỏ hàng...</div>';
         });
       }
     });

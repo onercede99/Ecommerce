@@ -1,6 +1,7 @@
 // File: src/main/java/com/codegym/controller/ProductController.java
 package com.codegym.controller;
 
+import com.codegym.dto.ReviewDto;
 import com.codegym.dto.ReviewSummaryDto;
 import com.codegym.model.Brand;
 import com.codegym.model.Category;
@@ -30,6 +31,7 @@ public class ProductController {
     private final BrandRepository brandRepository;
     private final ReviewRepository reviewRepository;
 
+
     public ProductController(IProductService productService, CategoryRepository categoryRepository, BrandRepository brandRepository, ReviewRepository reviewRepository) {
         this.productService = productService;
         this.categoryRepository = categoryRepository;
@@ -42,12 +44,13 @@ public class ProductController {
         return "home";
     }
 
-    // =========================================================================
-    // ĐÂY LÀ PHƯƠNG THỨC ĐÃ ĐƯỢC ĐƠN GIẢN HÓA HOÀN TOÀN
-    // =========================================================================
+    // Trong file ProductController.java
+
+    // Giữ nguyên các import và constructor
+
     @GetMapping("/products")
     public String listProducts(@RequestParam(name = "page", defaultValue = "0") int page,
-                               @RequestParam(name = "size", defaultValue = "12") int size, // Tăng size lên 12 cho đẹp
+                               @RequestParam(name = "size", defaultValue = "12") int size,
                                @RequestParam(name = "keyword", required = false) String keyword,
                                @RequestParam(name = "categoryId", required = false) Long categoryId,
                                @RequestParam(name = "sort", defaultValue = "latest") String sortOption,
@@ -56,7 +59,7 @@ public class ProductController {
                                @RequestParam(name = "maxPrice", required = false) Double maxPrice,
                                Model model) {
 
-        // 1. Tạo đối tượng Sort từ tham số sortOption
+
         Sort sort = switch (sortOption) {
             case "price,asc" -> Sort.by("price").ascending();
             case "price,desc" -> Sort.by("price").descending();
@@ -65,49 +68,57 @@ public class ProductController {
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        // 2. GỌI MỘT PHƯƠNG THỨC DUY NHẤT TỪ SERVICE
-        //    Service sẽ tự xử lý tất cả các logic lọc bên trong.
-        Page<Product> productPage = productService.findAll(keyword, categoryId,brandId, minPrice, maxPrice, pageable);
+        // 3. Gọi service để tìm kiếm và phân trang
+        // Giả sử productService của bạn có một phương thức findAll như thế này
+        Page<Product> productPage = productService.findAll(keyword, categoryId, brandId, minPrice, maxPrice, pageable);
 
-        // 3. Lấy danh sách categories để hiển thị sidebar
+        // 4. Lấy danh sách categories và brands để hiển thị sidebar bộ lọc
         List<Category> categories = categoryRepository.findAll();
         List<Brand> brands = brandRepository.findAll();
 
-        // 4. Đưa tất cả dữ liệu cần thiết vào Model để View sử dụng
+        // 5. Đưa tất cả dữ liệu cần thiết vào Model
         model.addAttribute("categories", categories);
         model.addAttribute("brands", brands);
         model.addAttribute("productPage", productPage);
         model.addAttribute("keyword", keyword);
         model.addAttribute("categoryId", categoryId);
-        model.addAttribute("sortOption", sortOption);
         model.addAttribute("brandId", brandId);
+        model.addAttribute("sortOption", sortOption);
         model.addAttribute("minPrice", minPrice);
         model.addAttribute("maxPrice", maxPrice);
 
-        return "product/list";
+        // 6. Trả về view
+        return "product/list"; // Trả về file product/list.html
+
     }
 
     @GetMapping("/products/{id}")
     public String productDetail(@PathVariable("id") Long id,
-                                @RequestParam(name = "page", defaultValue = "0") int page,
+                                @RequestParam(name = "reviewPage", defaultValue = "0") int reviewPageNum,
                                 Model model) {
-        // Tìm sản phẩm
+
+        // --- PHẦN LẤY DỮ LIỆU TỪ DB (GIỮ NGUYÊN) ---
         Optional<Product> productOptional = productService.findByIdWithDetails(id);
         if (productOptional.isEmpty()) {
             return "error/404";
         }
-
         Product product = productOptional.get();
-
-        Pageable reviewPageable = PageRequest.of(page, 5);
-        Page<Review> reviewPage = reviewRepository.findByProductIdOrderByReviewDateDesc(id, reviewPageable);
+        Pageable reviewPageable = PageRequest.of(reviewPageNum, 5);
+        Page<Review> reviewPage = reviewRepository.findByProductIdWithUser(id, reviewPageable);
         ReviewSummaryDto summary = reviewRepository.getReviewSummary(id);
         List<Product> relatedProducts = productService.findRelatedProducts(product, 4);
 
-        model.addAttribute("product", productOptional.get());
+
+        model.addAttribute("product", product);
         model.addAttribute("reviewPage", reviewPage);
         model.addAttribute("summary", summary);
         model.addAttribute("relatedProducts", relatedProducts);
+
+
+        if (!model.containsAttribute("newReview")) {
+            model.addAttribute("newReview", new ReviewDto());
+        }
+
 
         return "product/detail";
     }

@@ -21,14 +21,16 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     @Query("SELECT p FROM Product p LEFT JOIN FETCH p.images WHERE p.id = :id")
     Optional<Product> findByIdWithImages(@Param("id") Long id);
 
-    @Query("SELECT DISTINCT p FROM Product p " +
+    @Query("SELECT p FROM Product p " +
             "LEFT JOIN FETCH p.category " +
             "LEFT JOIN FETCH p.brand " +
-            "LEFT JOIN FETCH p.images " + // Quan trọng: LEFT JOIN FETCH images
+            "LEFT JOIN FETCH p.images " + // Tải danh sách ảnh phụ
             "WHERE p.id = :id")
     Optional<Product> findByIdWithDetails(@Param("id") Long id);
 
     // Phương thức tìm sản phẩm liên quan cũng cần JOIN FETCH để hiển thị ảnh
     @Query("SELECT p FROM Product p LEFT JOIN FETCH p.category WHERE p.category = :category AND p.id <> :id")
     List<Product> findByCategoryAndIdNot(Category category, Long id, Pageable pageable);
+
+
 }

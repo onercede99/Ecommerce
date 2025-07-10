@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -62,4 +64,7 @@ public class Product {
         // Nếu có ảnh, trả về đường dẫn đúng
         return "/images/default-product.png";
     }
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews = new ArrayList<>();
 }
