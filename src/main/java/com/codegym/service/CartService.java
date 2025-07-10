@@ -12,11 +12,16 @@ import com.codegym.repository.ProductRepository;
 import com.codegym.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.util.Map;
@@ -71,16 +76,6 @@ public class CartService implements ICartService {
             removeFromDbCart(productId, currentUser);
         } else {
             removeFromSessionCart(productId, session);
-        }
-    }
-
-    @Override
-    public void clearCart(HttpSession session) {
-        User currentUser = getCurrentUser();
-        if (currentUser != null) {
-            clearDbCart(currentUser);
-        } else {
-            clearSessionCart(session);
         }
     }
 
@@ -249,5 +244,48 @@ public class CartService implements ICartService {
         }
         String username = authentication.getName();
         return userRepository.findByUsername(username).orElse(null);
+    }
+
+    // Trong file CartService.java
+
+    @Override
+    @Transactional
+    public void clearCart(HttpSession session) {
+        User currentUser = getCurrentUser();
+
+        // Nếu người dùng đã đăng nhập
+        if (currentUser != null) {
+            LOGGER.info("Clearing DB cart for user: {}", currentUser.getUsername());
+            // Lấy giỏ hàng của người dùng từ CSDL
+            Cart cart = getOrCreateCart(currentUser);
+
+            // XÓA THEO CÁCH ĐÚNG CỦA JPA
+            // 1. Xóa tất cả các item khỏi collection trong đối tượng Cart
+            cart.getItems().clear();
+
+            // 2. Lưu lại đối tượng Cart.
+            // Do có 'orphanRemoval = true', Hibernate sẽ tự động xóa tất cả các CartItemDb
+            // không còn được tham chiếu trong collection 'items' nữa.
+            cartRepository.save(cart);
+
+        } else {
+            // Nếu là khách, chỉ cần xóa giỏ hàng khỏi session
+            LOGGER.info("Clearing session cart for guest.");
+            clearSessionCart(session);
+        }
+    }
+
+    @Override
+    public CartDto getCart(HttpServletRequest request) {
+        // Lấy giỏ hàng từ session
+        CartDto cartDto = (CartDto) request.getSession().getAttribute("cart");
+
+        // Nếu không có giỏ hàng trong session, tạo một giỏ hàng mới
+        if (cartDto == null) {
+            cartDto = new CartDto();
+        }
+
+        // Trả về giỏ hàng (có thể trống)
+        return cartDto;
     }
 }

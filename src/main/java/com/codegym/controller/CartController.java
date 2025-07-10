@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @Controller
@@ -43,6 +44,12 @@ public class CartController {
     @GetMapping("/remove/{productId}")
     public String removeFromCart(@PathVariable("productId") Long productId, HttpSession session) {
         cartService.removeFromCart(productId, session);
+        return "redirect:/cart";
+    }
+
+    @PostMapping("/clear")
+    public String clearCart(HttpSession session) { // <-- Chỉ cần HttpSession
+        cartService.clearCart(session);
         return "redirect:/cart";
     }
 }

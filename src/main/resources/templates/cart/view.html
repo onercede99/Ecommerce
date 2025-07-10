@@ -1,76 +1,93 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/client_layout}">
 <head>
-  <title>Shopping Cart</title>
+  <title>Giỏ Hàng Của Bạn</title>
 </head>
 <body>
-<section layout:fragment="content">
-  <div class="container">
-    <h1 class="my-4">Your Shopping Cart</h1>
-    <div th:if="${cart.items.isEmpty()}">
-      <div class="alert alert-warning" role="alert">
-        Your cart is empty. <a th:href="@{/products}" class="alert-link">Continue shopping</a>.
-      </div>
+<section layout:fragment="content" class="container my-5">
+  <h1 class="my-4">Giỏ Hàng Của Bạn</h1>
+
+  <!-- TRƯỜNG HỢP GIỎ HÀNG TRỐNG -->
+  <div th:if="${cart == null or cart.items.isEmpty()}">
+    <div class="alert alert-info text-center p-5">
+      <h4>Giỏ hàng của bạn đang trống.</h4>
+      <p class="lead">Hãy khám phá các sản phẩm tuyệt vời của chúng tôi!</p>
+      <a th:href="@{/products}" class="btn btn-primary mt-3">Tiếp tục mua sắm</a>
     </div>
-    <div th:if="${!cart.items.isEmpty()}">
-      <div class="row">
-        <!-- Cart items -->
-        <div class="col-md-8">
-          <table class="table">
-            <thead>
+  </div>
+
+  <!-- TRƯỜNG HỢP GIỎ HÀNG CÓ SẢN PHẨM -->
+  <div th:if="${cart != null and !cart.items.isEmpty()}">
+    <div class="row">
+      <!-- Cột trái: Danh sách sản phẩm trong giỏ -->
+      <div class="col-lg-8">
+        <div class="d-flex justify-content-end mb-3">
+          <form th:action="@{/cart/clear}" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa tất cả sản phẩm khỏi giỏ hàng?');">
+            <button type="submit" class="btn btn-outline-danger btn-sm">
+              <i class="fas fa-trash me-1"></i> Xóa tất cả
+            </button>
+          </form>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead class="table-light">
             <tr>
-              <th>Product</th>
-              <th>Price</th>
-              <th style="width: 120px;">Quantity</th>
-              <th>Subtotal</th>
-              <th>Action</th>
+              <th scope="col">Sản phẩm</th>
+              <th scope="col">Đơn giá</th>
+              <th scope="col" style="width: 120px;">Số lượng</th>
+              <th scope="col" class="text-end">Thành tiền</th>
+              <th scope="col" class="text-center">Xóa</th>
             </tr>
             </thead>
             <tbody>
             <tr th:each="item : ${cart.items.values()}">
               <td>
                 <div class="d-flex align-items-center">
-                  <img th:src="@{${item.product.getPhotosImagePath()}}" width="60" class="me-3">
-                  <span th:text="${item.product.name}">Product Name</span>
+                  <img th:src="@{${item.product.getPhotosImagePath()}}" width="70" class="img-thumbnail me-3">
+                  <a th:href="@{/products/{id}(id=${item.product.id})}" class="text-dark text-decoration-none" th:text="${item.product.name}">Tên sản phẩm</a>
                 </div>
               </td>
-              <td th:text="'$' + ${#numbers.formatDecimal(item.product.price, 1, 'COMMA', 2, 'POINT')}">Price</td>
+              <td th:text="${#numbers.formatDecimal(item.product.price, 0, 'POINT', 0, 'COMMA')} + ' ₫'">Đơn giá</td>
               <td>
+                <!-- Form cập nhật số lượng, tự động submit khi thay đổi -->
                 <form th:action="@{/cart/update}" method="post">
                   <input type="hidden" name="productId" th:value="${item.product.id}">
-
                   <input type="number" name="quantity" th:value="${item.quantity}"
-                         class="form-control form-control-sm" style="width: 80px;"
-                         min="1"
+                         class="form-control form-control-sm" style="width: 80px;" min="1"
                          onchange="this.form.submit()">
                 </form>
               </td>
-              <td th:text="'$' + ${#numbers.formatDecimal(item.getSubtotal(), 1, 'COMMA', 2, 'POINT')}">Subtotal</td>
-              <td>
-                <a th:href="@{/cart/remove/{id}(id=${item.product.id})}" class="btn btn-sm btn-danger">Remove</a>
+              <td class="text-end fw-bold" th:text="${#numbers.formatDecimal(item.getSubtotal(), 0, 'POINT', 0, 'COMMA')} + ' ₫'">Thành tiền</td>
+              <td class="text-center">
+                <a th:href="@{/cart/remove/{id}(id=${item.product.id})}" class="btn btn-sm btn-outline-danger" title="Xóa sản phẩm">
+                  <i class="fas fa-times"></i>
+                </a>
               </td>
             </tr>
             </tbody>
           </table>
         </div>
-        <!-- Cart summary -->
-        <div class="col-md-4">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Cart Summary</h5>
-              <ul class="list-group list-group-flush">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  Total Items
-                  <span class="badge bg-primary rounded-pill" th:text="${cart.totalItems}">0</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  <strong>Total Price</strong>
-                  <strong th:text="'$' + ${#numbers.formatDecimal(cart.totalPrice, 1, 'COMMA', 2, 'POINT')}">$0.00</strong>
-                </li>
-              </ul>
-              <a th:href="@{/checkout}" class="btn btn-primary w-100 mt-3">Proceed to Checkout</a>
+      </div>
+
+      <!-- Cột phải: Tóm tắt giỏ hàng -->
+      <div class="col-lg-4">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h4 class="card-title mb-3">Tóm Tắt Đơn Hàng</h4>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                Tổng số sản phẩm
+                <span class="badge bg-secondary rounded-pill" th:text="${cart.totalItems}">0</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                <strong>Tổng Cộng</strong>
+                <strong class="text-primary fs-5" th:text="${#numbers.formatDecimal(cart.totalPrice, 0, 'POINT', 0, 'COMMA')} + ' ₫'">0 ₫</strong>
+              </li>
+            </ul>
+            <div class="d-grid mt-3">
+              <a th:href="@{/checkout}" class="btn btn-primary btn-lg">Tiến Hành Thanh Toán</a>
             </div>
           </div>
         </div>

@@ -7,6 +7,7 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Entity
@@ -33,4 +34,12 @@ public class Order {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetail> orderDetails = new ArrayList<>();
+
+    public void addOrderDetail(OrderDetail detail) {
+        if (this.orderDetails == null) {
+            this.orderDetails = new ArrayList<>();
+        }
+        this.orderDetails.add(detail);
+        detail.setOrder(this);
+    }
 }

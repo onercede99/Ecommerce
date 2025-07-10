@@ -1,5 +1,6 @@
 package com.codegym.service;
 
+import com.codegym.dto.CartDto;
 import com.codegym.dto.CartItemDto;
 import com.codegym.model.Order;
 import com.codegym.model.OrderDetail;
@@ -14,6 +15,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -36,53 +39,61 @@ public class OrderService implements IOrderService{
 
     @Transactional
     public Order createOrder(String customerName, String shippingAddress, String phoneNumber,
-                             String email, String notes, HttpSession session) {
+                             String email, String notes,
+                             HttpSession session) { // <-- Chữ ký mới
 
+        // 1. Lấy giỏ hàng từ CartService, không cần truyền session nữa
+        CartDto cart = cartService.getCart(session);
+
+        // Kiểm tra nếu giỏ hàng trống thì không cho tạo đơn
+        if (cart.getItems().isEmpty()) {
+            throw new IllegalStateException("Cannot create order from an empty cart.");
+        }
+
+        // 2. Tạo một đối tượng Order mới
         Order order = new Order();
         order.setCustomerName(customerName);
         order.setShippingAddress(shippingAddress);
         order.setPhoneNumber(phoneNumber);
         order.setEmail(email);
         order.setNotes(notes);
-
         order.setOrderDate(LocalDateTime.now());
         order.setStatus("PENDING");
-        order.setTotalPrice(cartService.getTotalPrice(session)); // Lấy tổng tiền từ giỏ hàng
+        order.setTotalPrice(cart.getTotalPrice());
 
+        // 3. Gán User cho đơn hàng nếu người dùng đã đăng nhập
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
             userRepository.findByUsername(authentication.getName()).ifPresent(order::setUser);
         }
 
-        // 4. Chuyển đổi các item trong giỏ hàng thành OrderDetail
-        for (CartItemDto item : cartService.getCart(session).getItems().values()) {
+        // 4. Chuyển các CartItem thành OrderDetail và thêm vào Order
+        for (CartItemDto item : cart.getItems().values()) {
             OrderDetail detail = new OrderDetail();
-
-            // Thiết lập mối quan hệ hai chiều
             detail.setOrder(order);
-            order.getOrderDetails().add(detail);
 
-            // Lấy lại Product từ CSDL để đảm bảo dữ liệu là mới nhất và được quản lý bởi JPA
+            // Lấy lại Product từ database để đảm bảo dữ liệu mới nhất
             Product product = productRepository.findById(item.getProduct().getId())
                     .orElseThrow(() -> new IllegalStateException("Product with ID " + item.getProduct().getId() + " not found while creating order."));
 
             detail.setProduct(product);
             detail.setPrice(item.getProduct().getPrice()); // Lưu lại giá tại thời điểm mua hàng
             detail.setQuantity(item.getQuantity());
+
+            order.addOrderDetail(detail);
         }
 
-        // 5. Lưu Order vào CSDL.
-        // Nhờ CascadeType.ALL, tất cả các OrderDetail trong list cũng sẽ tự động được lưu.
+        // 5. Lưu toàn bộ đơn hàng (bao gồm các chi tiết) vào database
         Order savedOrder = orderRepository.save(order);
 
-        // 6. Xóa giỏ hàng sau khi đã đặt hàng thành công
+        // 6. Xóa giỏ hàng sau khi đã tạo đơn thành công
         cartService.clearCart(session);
 
+        // 7. Trả về đơn hàng đã được lưu
         return savedOrder;
     }
     @Override
     public long count() {
-        // JpaRepository đã cung cấp sẵn phương thức count()
         return orderRepository.count();
     }
 
@@ -91,9 +102,6 @@ public class OrderService implements IOrderService{
         // Gọi phương thức từ repository
         BigDecimal total = orderRepository.findTotalRevenue();
 
-        // XỬ LÝ QUAN TRỌNG NHẤT:
-        // Nếu repository trả về null (vì không có đơn hàng nào),
-        // chúng ta sẽ trả về BigDecimal.ZERO để tránh lỗi NullPointerException ở Controller.
         if (total == null) {
             return BigDecimal.ZERO;
         }
