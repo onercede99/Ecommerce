@@ -92,19 +92,22 @@ public class ProductController {
                                 @RequestParam(name = "page", defaultValue = "0") int page,
                                 Model model) {
         // Tìm sản phẩm
-        Optional<Product> productOptional = productService.findById(id);
+        Optional<Product> productOptional = productService.findByIdWithDetails(id);
         if (productOptional.isEmpty()) {
             return "error/404";
         }
 
+        Product product = productOptional.get();
+
         Pageable reviewPageable = PageRequest.of(page, 5);
         Page<Review> reviewPage = reviewRepository.findByProductIdOrderByReviewDateDesc(id, reviewPageable);
-
         ReviewSummaryDto summary = reviewRepository.getReviewSummary(id);
+        List<Product> relatedProducts = productService.findRelatedProducts(product, 4);
 
         model.addAttribute("product", productOptional.get());
         model.addAttribute("reviewPage", reviewPage);
         model.addAttribute("summary", summary);
+        model.addAttribute("relatedProducts", relatedProducts);
 
         return "product/detail";
     }

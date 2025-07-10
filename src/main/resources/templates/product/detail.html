@@ -1,28 +1,221 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity5"
       layout:decorate="~{layout/client_layout}">
-<head>
-  <title th:text="${product.name}">Product Detail</title>
-</head>
-<body>
-<section layout:fragment="content">
-  <div class="row">
-    <div class="col-md-6">
-      <img th:src="@{${product.getPhotosImagePath()}}" class="img-fluid rounded" alt="Product Image">
-    </div>
-    <div class="col-md-6">
-      <h1 th:text="${product.name}">Product Name</h1>
-      <p class="lead" th:text="${product.description}">Product description goes here.</p>
-      <h3 class="my-3" th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 'COMMA', 2, 'POINT')}">$99.99</h3>
 
-      <form th:action="@{/cart/add}" method="post" class="d-inline-flex align-items-center">
-        <input type="hidden" name="productId" th:value="${product.id}" />
-        <input type="number" name="quantity" value="1" min="1" class="form-control" style="width: 80px; margin-right: 10px;">
-        <button type="submit" class="btn btn-primary">Add to Cart</button>
-      </form>
+<head>
+  <title th:text="${product != null ? product.name : 'Product Not Found'}">Product Detail</title>
+  <!-- Thêm CSS cho icon sao (Font Awesome) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+  <style>
+    /* CSS tùy chỉnh cho trang chi tiết sản phẩm */
+    .main-img-container {
+      border: 1px solid #eee;
+      padding: 10px;
+      border-radius: 8px;
+      background-color: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .main-img {
+      width: 100%;
+      height: 450px;
+      object-fit: contain;
+    }
+    .thumbnail-list {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .thumbnail-item {
+      cursor: pointer;
+      border: 2px solid #ddd;
+      border-radius: 4px;
+      transition: border-color 0.3s ease;
+      overflow: hidden;
+      padding: 2px;
+    }
+    .thumbnail-item:hover, .thumbnail-item.active {
+      border-color: var(--primary-color);
+    }
+    .thumbnail-item img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      display: block;
+    }
+    .product-info h2 {
+      font-weight: 600;
+    }
+    .product-info .price {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+    .rating-summary .stars, .review-item .stars {
+      color: #ffc107;
+    }
+    #productTabContent {
+      border: 1px solid #dee2e6;
+      border-top: none;
+      border-radius: 0 0 .25rem .25rem;
+    }
+    /* Style cho card sản phẩm liên quan */
+    .product-card .card-title {
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    .product-card .card-title a {
+      color: var(--dark-color);
+      text-decoration: none;
+    }
+    .product-card .card-title a:hover {
+      color: var(--primary-color);
+    }
+  </style>
+</head>
+
+<body>
+<section layout:fragment="content" class="container my-5">
+
+  <!-- Hiển thị nội dung chính nếu tìm thấy sản phẩm -->
+  <div th:if="${product != null}">
+    <div class="row">
+      <!-- Cột trái: Thư viện ảnh -->
+      <div class="col-lg-6 mb-4 mb-lg-0">
+        <div class="main-img-container text-center">
+          <img th:src="@{${product.getPhotosImagePath()}}" class="main-img" id="mainProductImage" alt="Main Product Image">
+        </div>
+        <ul class="thumbnail-list">
+          <!-- Ảnh chính làm thumbnail đầu tiên -->
+          <li class="thumbnail-item active" th:attr="data-image-src=@{${product.getPhotosImagePath()}}">
+            <img th:src="@{${product.getPhotosImagePath()}}" alt="Product Thumbnail">
+          </li>
+          <!-- Lặp qua các ảnh phụ (nếu có) -->
+          <li th:if="${product.images != null}" th:each="extraImage : ${product.images}" class="thumbnail-item" th:attr="data-image-src=@{'/product-images/' + ${product.id} + '/extras/' + ${extraImage.name}}">
+            <img th:src="@{'/product-images/' + ${product.id} + '/extras/' + ${extraImage.name}}" alt="Extra Thumbnail">
+          </li>
+        </ul>
+      </div>
+
+      <!-- Cột phải: Thông tin sản phẩm và nút mua hàng -->
+      <div class="col-lg-6 product-info">
+        <h2 class="mb-3" th:text="${product.name}">Product Name</h2>
+
+        <p class="text-muted" th:if="${product.shortDescription}" th:text="${product.shortDescription}">Short description of the product goes here to give a quick overview.</p>
+
+        <div class="price my-3" th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 'COMMA', 2, 'POINT')}">
+          $99.99
+        </div>
+
+        <hr>
+
+        <form th:action="@{/cart/add}" method="post" class="d-flex align-items-center my-4">
+          <input type="hidden" name="productId" th:value="${product.id}" />
+          <div class="me-3">
+            <label for="quantity" class="form-label visually-hidden">Quantity</label>
+            <input type="number" name="quantity" id="quantity" value="1" min="1" class="form-control" style="width: 80px;">
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+          </button>
+        </form>
+
+        <div class="mt-4">
+          <p th:if="${product.category != null}"><strong>Category:</strong>
+            <a th:href="@{/products(categoryId=${product.category.id})}" th:text="${product.category.name}">Category Name</a>
+          </p>
+          <p th:if="${product.brand != null}"><strong>Brand:</strong>
+            <a th:href="@{/products(brandId=${product.brand.id})}" th:text="${product.brand.name}">Brand Name</a>
+          </p>
+        </div>
+      </div>
     </div>
+
+    <hr class="my-5">
+
+    <!-- Phần 2: Tab Mô tả chi tiết và Đánh giá -->
+    <div class="row">
+      <div class="col-12">
+        <ul class="nav nav-tabs" id="productTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description-pane" type="button" role="tab" aria-controls="description-pane" aria-selected="true">Description</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="reviews-tab" data-bs-toggle="tab" data-bs-target="#reviews-pane" type="button" role="tab" aria-controls="reviews-pane" aria-selected="false">Reviews (<span th:text="${summary != null ? summary.totalReviews : 0}">0</span>)</button>
+          </li>
+        </ul>
+        <div class="tab-content card p-4" id="productTabContent">
+          <div class="tab-pane fade show active" id="description-pane" role="tabpanel" aria-labelledby="description-tab" tabindex="0">
+            <!-- Dùng th:utext để render HTML từ description -->
+            <div th:utext="${product.description}">Full product description here.</div>
+          </div>
+          <div class="tab-pane fade" id="reviews-pane" role="tabpanel" aria-labelledby="reviews-tab" tabindex="0">
+            <h4>Customer Reviews</h4>
+            <p>This feature is coming soon!</p>
+            <!-- Phần đánh giá sẽ được thêm vào đây trong tương lai -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phần 3: Sản phẩm liên quan -->
+    <div class="row mt-5" th:if="${relatedProducts != null and !relatedProducts.isEmpty()}">
+      <div class="col-12">
+        <h3 class="mb-4">Related Products</h3>
+      </div>
+      <div class="col-lg-3 col-md-4 col-6 mb-4" th:each="related : ${relatedProducts}">
+        <div class="card h-100 product-card">
+          <a th:href="@{/products/{id}(id=${related.id})}">
+            <img th:src="@{${related.getPhotosImagePath()}}" class="card-img-top" th:alt="${related.name}">
+          </a>
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">
+              <a th:href="@{/products/{id}(id=${related.id})}" th:text="${related.name}">Product Name</a>
+            </h5>
+            <p class="card-text price mt-auto" th:text="'$' + ${#numbers.formatDecimal(related.price, 1, 'COMMA', 2, 'POINT')}"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Hiển thị thông báo nếu không tìm thấy sản phẩm -->
+  <div th:if="${product == null}" class="alert alert-danger text-center" role="alert">
+    <h2>Product Not Found</h2>
+    <p>The product you are looking for does not exist.</p>
+    <a th:href="@{/}" class="btn btn-primary">Go to Homepage</a>
   </div>
 </section>
+
+<!-- JavaScript dành riêng cho trang này -->
+<th:block layout:fragment="script">
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener('DOMContentLoaded', function() {
+      const mainImage = document.getElementById('mainProductImage');
+      const thumbnails = document.querySelectorAll('.thumbnail-item');
+
+      if (mainImage && thumbnails.length > 0) {
+        thumbnails.forEach(thumb => {
+          thumb.addEventListener('click', function() {
+            thumbnails.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            const newImageSrc = this.getAttribute('data-image-src');
+            if (newImageSrc) {
+              mainImage.src = newImageSrc;
+            }
+          });
+        });
+      }
+    });
+    /*]]>*/
+  </script>
+</th:block>
+
 </body>
 </html>

@@ -19,7 +19,12 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
+    @Column(length = 1024) // Mô tả dài
     private String description;
+
+    // ===== THÊM THUỘC TÍNH MỚI VÀO ĐÂY =====
+    @Column(name = "short_description", length = 255)
+    private String shortDescription;
 
     @Column(nullable = false)
     private BigDecimal price;
