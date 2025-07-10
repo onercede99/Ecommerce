@@ -1,17 +1,18 @@
 /* static/css/admin_style.css */
 
-/* --- Import Google Font (Optional, can use system font for speed) --- */
+/* --- Import Google Font (Giữ lại từ file của bạn) --- */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
-/* --- Cài đặt chung --- */
+/* --- Cài đặt chung và Biến màu (Giữ lại từ file của bạn) --- */
 :root {
-    --admin-bg: #f4f6f9; /* Màu nền xám nhạt của dashboard */
-    --admin-text: #495057;
-    --admin-primary: #007bff;
-    --admin-border: #dee2e6;
-    --admin-sidebar-bg: #343a40;
-    --admin-sidebar-text: #c2c7d0;
-    --admin-sidebar-active: #007bff;
+    --admin-bg: #f4f6f9; /* Màu nền xám nhạt */
+    --admin-text: #495057; /* Màu chữ chính */
+    --admin-primary: #007bff; /* Màu nhấn */
+    --admin-border: #dee2e6; /* Màu viền */
+    --admin-sidebar-bg: #343a40; /* Màu nền sidebar */
+    --admin-sidebar-text: #c2c7d0; /* Màu chữ sidebar */
+    --admin-sidebar-hover-bg: #495057; /* Màu nền khi hover item */
+    --admin-sidebar-active-bg: var(--admin-primary); /* Màu nền item được chọn */
     --body-font: 'Inter', sans-serif;
 }
 
@@ -19,38 +20,113 @@ body {
     background-color: var(--admin-bg);
     font-family: var(--body-font);
     color: var(--admin-text);
+    margin: 0;
+    padding: 0;
 }
 
-/* --- Header --- */
-.admin-header .navbar {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+a, a:hover, a:focus {
+    color: inherit;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
 }
 
-.admin-header .navbar-brand {
+/* ======================================= */
+/* --- PHẦN MỚI: LAYOUT WRAPPER & SIDEBAR --- */
+/* ======================================= */
+.admin-wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+    min-height: 100vh;
+}
+
+/* --- Sidebar (Menu bên trái) --- */
+.admin-sidebar {
+    min-width: 260px;
+    max-width: 260px;
+    background: var(--admin-sidebar-bg);
+    color: var(--admin-sidebar-text);
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column; /* Sắp xếp các mục theo chiều dọc */
+}
+
+.sidebar-header {
+    padding: 20px;
+    background: rgba(0,0,0,0.2); /* Làm header của sidebar tối hơn một chút */
+    text-align: center;
+}
+
+.sidebar-header h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0;
     font-weight: 600;
 }
 
-.admin-header .nav-link {
-    color: rgba(255, 255, 255, 0.75) !important;
+.admin-sidebar ul.components {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--admin-sidebar-hover-bg);
+    flex-grow: 1; /* Quan trọng: Đẩy các nút CTA xuống dưới cùng */
 }
 
-.admin-header .nav-link:hover,
-.admin-header .nav-item.active .nav-link {
-    color: #fff !important;
+.admin-sidebar ul li a {
+    padding: 15px 30px;
+    font-size: 1.1em;
+    display: block;
 }
 
-.admin-header .btn-link {
-    color: rgba(255, 255, 255, 0.75);
-    text-decoration: none;
+.admin-sidebar ul li a:hover {
+    color: #fff;
+    background: var(--admin-sidebar-hover-bg);
 }
-.admin-header .btn-link:hover {
+
+.admin-sidebar ul li.active > a, a[aria-expanded="true"] {
+    color: #fff;
+    background: var(--admin-sidebar-active-bg);
+}
+
+.admin-sidebar ul li a i {
+    margin-right: 12px;
+    width: 20px; /* Đảm bảo các icon thẳng hàng */
+    text-align: center;
+}
+
+/* Các nút Logout/View Site */
+.admin-sidebar ul.cta {
+    padding: 20px 30px;
+}
+
+.admin-sidebar ul.cta a {
+    text-align: center;
+    font-size: 0.9em !important;
+    display: block;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    padding: 10px;
     color: #fff;
 }
+.admin-sidebar a.logout {
+    background: #c82333; /* Màu đỏ đậm hơn */
+}
+.admin-sidebar a.view-site {
+    background: #5a6268; /* Màu xám đậm hơn */
+}
+
+/* --- Nội dung chính (bên phải) --- */
+.admin-content {
+    width: 100%;
+    padding: 20px 30px; /* Thêm padding cho nội dung chính */
+    transition: all 0.3s;
+}
 
 
-/* --- Main Content --- */
+/* ============================================ */
+/* --- CÁC STYLE CŨ CỦA BẠN (ĐƯỢC GIỮ LẠI) --- */
+/* ============================================ */
+
+/* Style này có thể không cần thiết nữa vì đã có content padding */
 .admin-main {
-    padding: 2rem;
+    /* padding: 2rem; */
 }
 
 .page-title {
@@ -58,23 +134,24 @@ body {
     font-weight: 600;
 }
 
-/* --- Table Styling --- */
 .table {
     background-color: #fff;
-    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    box-shadow: 0 0 15px rgba(0,0,0,0.07);
+    border-radius: 5px;
+    overflow: hidden; /* Giúp bo góc cho thead */
 }
 
 .table thead {
     background-color: #e9ecef;
+    font-weight: 600;
 }
 
-/* --- Form Styling --- */
 .card {
-    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    box-shadow: 0 0 15px rgba(0,0,0,0.07);
     border: 1px solid var(--admin-border);
+    border-radius: 5px;
 }
 
-/* --- Flash Messages (Thông báo) --- */
 .alert {
     border-radius: 0.25rem;
 }
