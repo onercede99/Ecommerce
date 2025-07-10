@@ -253,25 +253,17 @@ public class CartService implements ICartService {
     public void clearCart(HttpSession session) {
         User currentUser = getCurrentUser();
 
-        // Nếu người dùng đã đăng nhập
         if (currentUser != null) {
             LOGGER.info("Clearing DB cart for user: {}", currentUser.getUsername());
-            // Lấy giỏ hàng của người dùng từ CSDL
             Cart cart = getOrCreateCart(currentUser);
-
-            // XÓA THEO CÁCH ĐÚNG CỦA JPA
-            // 1. Xóa tất cả các item khỏi collection trong đối tượng Cart
             cart.getItems().clear();
-
-            // 2. Lưu lại đối tượng Cart.
-            // Do có 'orphanRemoval = true', Hibernate sẽ tự động xóa tất cả các CartItemDb
-            // không còn được tham chiếu trong collection 'items' nữa.
             cartRepository.save(cart);
 
         } else {
-            // Nếu là khách, chỉ cần xóa giỏ hàng khỏi session
             LOGGER.info("Clearing session cart for guest.");
-            clearSessionCart(session);
+//            clearSessionCart(session);
+            session.removeAttribute(SESSION_CART_NAME);
+
         }
     }
 

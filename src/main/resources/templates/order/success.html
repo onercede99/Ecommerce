@@ -1,20 +1,58 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/client_layout}">
 <head>
-    <title>Order Successful</title>
+    <title>Đặt Hàng Thành Công</title>
+    <style>
+        .success-icon {
+            font-size: 5rem;
+            color: #198754; /* Bootstrap success color */
+        }
+    </style>
 </head>
 <body>
-<section layout:fragment="content">
-    <div class="container text-center py-5">
-        <h1 class="display-4 text-success">Thank You!</h1>
-        <p class="lead">Your order has been placed successfully.</p>
-        <hr>
-        <p>Your Order ID is: <strong th:text="${orderId}">#000000</strong></p>
-        <p>We will contact you shortly to confirm your order.</p>
-        <a th:href="@{/products}" class="btn btn-primary mt-3">Continue Shopping</a>
+
+<section layout:fragment="content" class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card p-5 shadow-sm">
+                <!-- Icon thành công -->
+                <div class="success-icon mb-4">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+
+                <!-- Tiêu đề và thông báo -->
+                <h1 class="display-5 fw-bold">Đặt Hàng Thành Công!</h1>
+                <p class="lead text-muted">
+                    Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi.
+                </p>
+
+                <!-- Hiển thị mã đơn hàng -->
+                <p th:if="${orderId != null}">
+                    Mã đơn hàng của bạn là: <strong class="text-primary">#<span th:text="${orderId}">12345</span></strong>
+                </p>
+
+                <p>
+                    Chúng tôi đã gửi một email xác nhận đến địa chỉ của bạn.
+                    Nhân viên của chúng tôi sẽ sớm liên hệ để xác nhận đơn hàng.
+                </p>
+
+                <hr class="my-4">
+
+                <!-- Các nút hành động -->
+                <div class="d-flex justify-content-center gap-3">
+                    <a th:href="@{/products}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-arrow-left me-2"></i>Tiếp tục mua sắm
+                    </a>
+                    <a th:href="@{/account/orders}" class="btn btn-outline-secondary btn-lg">
+                        <i class="fas fa-history me-2"></i>Xem lịch sử đơn hàng
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
+
 </body>
 </html>

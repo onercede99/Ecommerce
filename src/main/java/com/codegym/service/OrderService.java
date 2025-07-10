@@ -40,13 +40,11 @@ public class OrderService implements IOrderService{
 
     @Transactional
     public Order createOrder(String customerName, String shippingAddress, String phoneNumber,
-                             String email, String notes,
-                             HttpSession session) { // <-- Chữ ký mới
+                             String email, String notes,String paymentMethod,
+                             HttpSession session) {
 
-        // 1. Lấy giỏ hàng từ CartService, không cần truyền session nữa
         CartDto cart = cartService.getCart(session);
 
-        // Kiểm tra nếu giỏ hàng trống thì không cho tạo đơn
         if (cart.getItems().isEmpty()) {
             throw new IllegalStateException("Cannot create order from an empty cart.");
         }
@@ -61,8 +59,9 @@ public class OrderService implements IOrderService{
         order.setOrderDate(LocalDateTime.now());
         order.setStatus("PENDING");
         order.setTotalPrice(cart.getTotalPrice());
+        order.setPaymentMethod(paymentMethod);
 
-        // 3. Gán User cho đơn hàng nếu người dùng đã đăng nhập
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && !"anonymousUser".equals(authentication.getPrincipal())) {
             userRepository.findByUsername(authentication.getName()).ifPresent(order::setUser);

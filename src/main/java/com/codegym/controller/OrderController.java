@@ -45,14 +45,15 @@ public class OrderController {
                              @RequestParam String phoneNumber,
                              @RequestParam String email,
                              @RequestParam(required = false) String notes,
+                             @RequestParam String paymentMethod,
                              Model model,
-                             HttpSession session) { // Thêm HttpSession
+                             HttpSession session) {
 
         if (cartService.getCart(session).getItems().isEmpty()) {
             return "redirect:/cart";
         }
 
-        Order order = orderService.createOrder(customerName, shippingAddress, phoneNumber, email, notes, session);
+        Order order = orderService.createOrder(customerName, shippingAddress, phoneNumber, email, notes,paymentMethod, session);
 
         model.addAttribute("orderId", order.getId());
 

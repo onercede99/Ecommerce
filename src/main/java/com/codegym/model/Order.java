@@ -26,11 +26,18 @@ public class Order {
     private String email;
     private String notes;
     private BigDecimal totalPrice;
-    private String status; // Ví dụ: PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELED
 
-    @ManyToOne(fetch = FetchType.LAZY) // Dùng LAZY để tối ưu hiệu năng
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @Getter
+    @Setter
     private User user;
+
+    @Column(nullable = false)
+    private String status;
+
+    @Column(length = 50, nullable = false)
+    private String paymentMethod;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetail> orderDetails = new ArrayList<>();
