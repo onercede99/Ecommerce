@@ -21,6 +21,7 @@ import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class OrderService implements IOrderService{
@@ -112,5 +113,13 @@ public class OrderService implements IOrderService{
     @Override
     public List<Order> findByUser(User user) {
         return orderRepository.findByUserOrderByOrderDateDesc(user);
+    }
+
+    @Override
+    public Optional<Order> findOrderByIdForUser(Long orderId, User user) {
+        if (user == null) {
+            return Optional.empty();
+        }
+        return orderRepository.findByIdAndUserIdWithDetails(orderId, user.getId());
     }
 }

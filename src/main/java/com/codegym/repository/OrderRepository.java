@@ -6,9 +6,11 @@ import com.codegym.model.User;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByUserOrderByOrderDateDesc(User user);
@@ -28,5 +30,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT SUM(o.totalPrice) FROM Order o WHERE o.status = 'DELIVERED'")
     BigDecimal findTotalRevenueOfDeliveredOrders();
+
+    @Query("SELECT o FROM Order o " +
+            "LEFT JOIN FETCH o.orderDetails od " +
+            "LEFT JOIN FETCH od.product " +
+            "WHERE o.id = :orderId AND o.user.id = :userId")
+    Optional<Order> findByIdAndUserIdWithDetails(@Param("orderId") Long orderId, @Param("userId") Long userId);
 
 }

@@ -5,10 +5,13 @@ import com.codegym.model.User;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface IOrderService {
     long count();
     BigDecimal calculateTotalRevenue();
     List<Order> findByUser(User user);
+    Optional<Order> findOrderByIdForUser(Long orderId, User user);
+
 
 }

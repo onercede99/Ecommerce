@@ -28,7 +28,7 @@
                                 <td th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy')}"></td>
                                 <td th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></td>
                                 <td><span class="badge bg-success" th:text="${order.status}"></span></td>
-                                <td><a href="#" class="btn btn-sm btn-outline-primary">Xem Chi Tiết</a></td>
+                                <td><a th:href="@{/account/orders/{id}(id=${order.id})}" class="btn btn-sm btn-outline-primary">Xem Chi Tiết</a></td>
                             </tr>
                             </tbody>
                         </table>

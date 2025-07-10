@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/client_layout}">
+<head>
+  <title th:text="'Chi Tiết Đơn Hàng #' + ${order.id}">Chi Tiết Đơn Hàng</title>
+</head>
+<body>
+<section layout:fragment="content" class="container my-5">
+  <div class="row">
+    <!-- Menu Sidebar -->
+    <div class="col-md-3">
+      <div th:replace="~{fragments/account_sidebar :: sidebar('orders')}"></div>
+    </div>
+
+    <!-- Nội dung chính -->
+    <div class="col-md-9">
+      <div th:if="${order != null}">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h3>Chi Tiết Đơn Hàng <span class="text-primary" th:text="'#' + ${order.id}"></span></h3>
+          <a th:href="@{/account/orders}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại Lịch Sử Đơn Hàng
+          </a>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <strong>Ngày Đặt:</strong> <span th:text="${#temporals.format(order.orderDate, 'HH:mm dd/MM/yyyy')}"></span>
+            <span class="badge float-end" th:classappend="${order.status == 'PENDING' ? 'bg-warning text-dark' : 'bg-success'}" th:text="${order.status}"></span>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <h5><strong>Địa Chỉ Giao Hàng</strong></h5>
+                <p class="mb-1" th:text="${order.customerName}"></p>
+                <p class="mb-1" th:text="${order.phoneNumber}"></p>
+                <p class="mb-1" th:text="${order.shippingAddress}"></p>
+              </div>
+              <div class="col-md-6">
+                <h5><strong>Thông Tin Thanh Toán</strong></h5>
+                <p class="mb-1"><strong>Phương thức:</strong> <span th:text="${order.paymentMethod}"></span></p>
+                <p class="mb-1"><strong>Tổng tiền:</strong> <strong class="text-danger fs-5" th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></strong></p>
+              </div>
+            </div>
+            <hr>
+            <h5><strong>Các Sản Phẩm Trong Đơn Hàng</strong></h5>
+            <table class="table">
+              <tbody>
+              <tr th:each="detail : ${order.orderDetails}">
+                <td>
+                  <img th:src="@{${detail.product.getPhotosImagePath()}}" width="60" class="img-thumbnail me-3">
+                </td>
+                <td>
+                  <a th:href="@{/products/{id}(id=${detail.product.id})}" class="text-decoration-none" th:text="${detail.product.name}"></a>
+                  <br>
+                  <small class="text-muted" th:text="'Số lượng: ' + ${detail.quantity}"></small>
+                </td>
+                <td class="text-end" th:text="${#numbers.formatDecimal(detail.price * detail.quantity, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div th:if="${order == null}" class="alert alert-danger">Đơn hàng không tồn tại hoặc bạn không có quyền xem.</div>
+    </div>
+  </div>
+</section>
+</body>
+</html>

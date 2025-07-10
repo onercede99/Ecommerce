@@ -12,14 +12,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/account") // Tất cả các URL sẽ bắt đầu bằng /account
@@ -106,5 +104,21 @@ public class AccountController {
         }
 
         return "redirect:/account/change-password";
+    }
+
+    @GetMapping("/orders/{id}")
+    public String viewOrderDetail(@PathVariable("id") Long orderId, Model model, RedirectAttributes ra) {
+        User currentUser = getCurrentUser();
+        if (currentUser == null) { return "redirect:/login"; }
+
+        Optional<Order> orderOptional = orderService.findOrderByIdForUser(orderId, currentUser);
+
+        if (orderOptional.isPresent()) {
+            model.addAttribute("order", orderOptional.get());
+            return "account/order_detail";
+        } else {
+            ra.addFlashAttribute("errorMessage", "Không tìm thấy đơn hàng hoặc bạn không có quyền truy cập.");
+            return "redirect:/account/orders";
+        }
     }
 }
