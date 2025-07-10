@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="sidebar(active_item)">
+  <div class="list-group">
+    <a th:href="@{/account}" class="list-group-item list-group-item-action" th:classappend="${active_item == 'profile'} ? 'active'">
+      <i class="fas fa-user-circle me-2"></i>Thông Tin Cá Nhân
+    </a>
+    <a th:href="@{/account/orders}" class="list-group-item list-group-item-action" th:classappend="${active_item == 'orders'} ? 'active'">
+      <i class="fas fa-history me-2"></i>Lịch Sử Đơn Hàng
+    </a>
+    <a th:href="@{/account/change-password}" class="list-group-item list-group-item-action" th:classappend="${active_item == 'password'} ? 'active'">
+      <i class="fas fa-key me-2"></i>Đổi Mật Khẩu
+    </a>
+    <a href="#" class="list-group-item list-group-item-action text-danger" onclick="document.getElementById('logout-form-account').submit(); return false;">
+      <i class="fas fa-sign-out-alt me-2"></i>Đăng Xuất
+    </a>
+    <form id="logout-form-account" th:action="@{/logout}" method="post" style="display: none;"></form>
+  </div>
+</div>
+</body>
+</html>

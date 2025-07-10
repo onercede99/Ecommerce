@@ -1,57 +1,37 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/client_layout}">
-<head>
-    <title>My Order History</title>
-</head>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/client_layout}">
+<head><title>Lịch Sử Đơn Hàng</title></head>
 <body>
-<section layout:fragment="content">
-    <div class="container">
-        <h1 class="my-4">My Order History</h1>
+<section layout:fragment="content" class="container my-5">
+    <div class="row">
         <div class="col-md-3">
-            <div class="list-group">
-                <a th:href="@{/account/profile}" class="list-group-item list-group-item-action " >
-                    Change Password
-                </a>
-                <a th:href="@{/account/orders}" class="list-group-item list-group-item-action active" aria-current="true">Order History</a>
-            </div>
+            <div th:replace="~{fragments/account_sidebar :: sidebar('orders')}"></div>
         </div>
-        <div th:if="${!orders.isEmpty()}" class="accordion" id="orderHistoryAccordion">
-            <div class="accordion-item" th:each="order, iterStat : ${orders}">
-                <h2 class="accordion-header" th:id="'heading' + ${iterStat.count}">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            th:data-bs-target="'#collapse' + ${iterStat.count}" aria-expanded="false"
-                            th:aria-controls="'collapse' + ${iterStat.count}">
-                        <div class="w-100 d-flex justify-content-between pe-3">
-                            <span>Order #[[${order.id}]]</span>
-                            <span th:text="${#temporals.format(order.orderDate, 'dd MMM yyyy')}"></span>
-                            <span class="badge"
-                                  th:classappend="${order.status == 'PENDING' ? 'bg-warning text-dark' : (order.status == 'DELIVERED' ? 'bg-success' : 'bg-secondary')}"
-                                  th:text="${order.status}">
-                            </span>
-                        </div>
-                    </button>
-                </h2>
-                <div th:id="'collapse' + ${iterStat.count}" class="accordion-collapse collapse"
-                     th:aria-labelledby="'heading' + ${iterStat.count}" data-bs-parent="#orderHistoryAccordion">
-                    <div class="accordion-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <strong>Shipping Address:</strong>
-                                <p th:text="${order.shippingAddress}"></p>
-                                <strong>Total Price:</strong>
-                                <p class="fw-bold" th:text="'$' + ${#numbers.formatDecimal(order.totalPrice, 1, 'COMMA', 2, 'POINT')}"></p>
-                            </div>
-                            <div class="col-md-6">
-                                <strong>Items:</strong>
-                                <ul>
-                                    <li th:each="detail : ${order.orderDetails}">
-                                        [[${detail.product.name}]] (x[[${detail.quantity}]])
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+        <div class="col-md-9">
+            <div class="card"><div class="card-header"><h3>Lịch Sử Đơn Hàng</h3></div>
+                <div class="card-body">
+                    <div th:if="${orders.isEmpty()}" class="alert alert-info">Bạn chưa có đơn hàng nào.</div>
+                    <div th:unless="${orders.isEmpty()}" class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>Mã ĐH</th>
+                                <th>Ngày Đặt</th>
+                                <th>Tổng Tiền</th>
+                                <th>Trạng Thái</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="order : ${orders}">
+                                <td th:text="'#' + ${order.id}"></td>
+                                <td th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy')}"></td>
+                                <td th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></td>
+                                <td><span class="badge bg-success" th:text="${order.status}"></span></td>
+                                <td><a href="#" class="btn btn-sm btn-outline-primary">Xem Chi Tiết</a></td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

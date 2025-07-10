@@ -58,19 +58,22 @@ public class UserService {
         cartRepository.save(cart);
     }
 
-    public void changePassword(String username, PasswordChangeDto passwordChangeDto) {
+    public void changePassword(String username, PasswordChangeDto dto) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
 
-        if (!passwordEncoder.matches(passwordChangeDto.getCurrentPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("Incorrect current password.");
+        // Kiểm tra mật khẩu hiện tại có đúng không
+        if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Mật khẩu hiện tại không đúng.");
         }
 
-        if (!passwordChangeDto.getNewPassword().equals(passwordChangeDto.getConfirmPassword())) {
-            throw new IllegalArgumentException("New password and confirm password do not match.");
+        // Kiểm tra mật khẩu mới và xác nhận có khớp không
+        if (!dto.getNewPassword().equals(dto.getConfirmPassword())) {
+            throw new IllegalArgumentException("Mật khẩu mới và xác nhận mật khẩu không khớp.");
         }
 
-        user.setPassword(passwordEncoder.encode(passwordChangeDto.getNewPassword()));
+        // Cập nhật mật khẩu mới đã được mã hóa
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         userRepository.save(user);
     }
 }

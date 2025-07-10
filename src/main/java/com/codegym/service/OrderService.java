@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class OrderService implements IOrderService{
@@ -107,5 +108,10 @@ public class OrderService implements IOrderService{
         }
 
         return total;
+    }
+
+    @Override
+    public List<Order> findByUser(User user) {
+        return orderRepository.findByUserOrderByOrderDateDesc(user);
     }
 }

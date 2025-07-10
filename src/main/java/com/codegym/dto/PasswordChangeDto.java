@@ -4,16 +4,16 @@ import lombok.Data;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
-@Data
+@Data // <-- Annotation này rất quan trọng, nó tự tạo getter và setter
 public class PasswordChangeDto {
 
-    @NotEmpty(message = "Current password cannot be empty")
-    private String currentPassword;
+    @NotEmpty(message = "Mật khẩu hiện tại không được để trống")
+    private String currentPassword; // <-- Tên trường phải là 'currentPassword'
 
-    @NotEmpty(message = "New password cannot be empty")
-    @Size(min = 6, message = "New password must have at least 6 characters")
-    private String newPassword;
+    @NotEmpty(message = "Mật khẩu mới không được để trống")
+    @Size(min = 6, message = "Mật khẩu mới phải có ít nhất 6 ký tự")
+    private String newPassword; // <-- Tên trường phải là 'newPassword'
 
-    @NotEmpty(message = "Confirm password cannot be empty")
-    private String confirmPassword;
+    @NotEmpty(message = "Xác nhận mật khẩu không được để trống")
+    private String confirmPassword; // <-- Tên trường phải là 'confirmPassword'
 }

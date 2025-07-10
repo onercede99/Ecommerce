@@ -1,48 +1,21 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/client_layout}">
-<head>
-  <title>My Profile</title>
-</head>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/client_layout}">
+<head><title>Thông Tin Cá Nhân</title></head>
 <body>
-<section layout:fragment="content">
-  <div class="container">
-    <h1 class="my-4">My Profile</h1>
-    <div class="row">
-      <div class="col-md-3">
-        <!-- Menu điều hướng cho trang Account -->
-        <div class="list-group">
-          <a th:href="@{/account/profile}" class="list-group-item list-group-item-action active" aria-current="true">
-            Change Password
-          </a>
-          <a th:href="@{/account/orders}" class="list-group-item list-group-item-action" >Order History</a>
+<section layout:fragment="content" class="container my-5">
+  <div class="row">
+    <!-- Menu bên trái -->
+    <div class="col-md-3">
+      <div th:replace="~{fragments/account_sidebar :: sidebar('profile')}"></div>
+    </div>
+    <!-- Nội dung chính -->
+    <div class="col-md-9">
+      <div class="card"><div class="card-header"><h3>Thông Tin Cá Nhân</h3></div>
+        <div class="card-body">
+          <p><strong>Tên đăng nhập:</strong> <span th:text="${user.username}"></span></p>
+          <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+          <!-- Thêm các thông tin khác nếu User entity của bạn có -->
         </div>
-      </div>
-      <div class="col-md-9">
-        <h4>Change Your Password</h4>
-
-        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
-        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
-
-        <form th:action="@{/account/change-password}" th:object="${passwordChangeDto}" method="post">
-          <div class="mb-3">
-            <label for="currentPassword" class="form-label">Current Password</label>
-            <input type="password" th:field="*{currentPassword}" id="currentPassword" class="form-control">
-            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('currentPassword')}" th:errors="*{currentPassword}"></div>
-          </div>
-          <div class="mb-3">
-            <label for="newPassword" class="form-label">New Password</label>
-            <input type="password" th:field="*{newPassword}" id="newPassword" class="form-control">
-            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}"></div>
-          </div>
-          <div class="mb-3">
-            <label for="confirmPassword" class="form-label">Confirm New Password</label>
-            <input type="password" th:field="*{confirmPassword}" id="confirmPassword" class="form-control">
-            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
-          </div>
-          <button type="submit" class="btn btn-primary">Change Password</button>
-        </form>
       </div>
     </div>
   </div>
