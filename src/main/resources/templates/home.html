@@ -1,41 +1,57 @@
 <!DOCTYPE html>
-<!-- Dòng 1: Khai báo đầy đủ để sử dụng layout -->
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/client_layout}">
 <head>
-    <title>Home Page</title>
+    <title>Trang Chủ</title>
 </head>
 <body>
 
 <section layout:fragment="content">
-    <div class="container mt-5">
-        <div class="p-5 mb-4 bg-light rounded-3 text-center">
-            <div class="container-fluid py-5">
-                <h1 class="display-4 fw-bold">Welcome to Our E-Commerce Store!</h1>
-                <p class="fs-4">We offer the best books for developers and tech enthusiasts.</p>
-                <hr class="my-4">
-                <p>Explore our amazing collection of products and start your learning journey today.</p>
-                <a class="btn btn-primary btn-lg" th:href="@{/products}" role="button">
-                    <i class="fas fa-shopping-cart"></i> Shop Now
-                </a>
-            </div>
-        </div>
+    <!-- Phần Banner Chào Mừng -->
+    <div class="container-fluid bg-light p-5 text-center mb-4">
+        <h1 class="display-4 fw-bold">Khám Phá Thế Giới Sách Công Nghệ</h1>
+        <p class="fs-4">Nâng cao kỹ năng, cập nhật kiến thức với bộ sưu tập sách dành riêng cho lập trình viên.</p>
+        <a class="btn btn-primary btn-lg mt-3" th:href="@{/products}" role="button">
+            <i class="fas fa-search"></i> Xem tất cả sản phẩm
+        </a>
     </div>
 
-    <div class="row text-center">
-        <div class="col-lg-4">
-            <h2>Quality Products</h2>
-            <p>Hand-picked books to boost your career.</p>
+    <div class="container">
+        <h2 class="text-center mb-4">Sản Phẩm Nổi Bật</h2>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-4" th:each="product : ${products}">
+                <div class="card h-100">
+                    <!-- Hình ảnh sản phẩm -->
+                    <a th:href="@{'/products/detail/' + ${product.id}}" class="product-image-wrapper">
+                        < <img th:src="@{${product.getPhotosImagePath()}}" class="card-img-top" alt="Ảnh sản phẩm">
+                    </a>
+                    </a>
+                    <div class="card-body d-flex flex-column">
+                        <!-- Tên sản phẩm -->
+                        <h5 class="card-title">
+                            <a class="text-dark text-decoration-none" th:href="@{'/products/detail/' + ${product.id}}" th:text="${product.name}">Tên Sản Phẩm</a>
+                        </h5>
+                        <!-- Giá sản phẩm -->
+                        <p class="card-text text-danger fw-bold"
+                           th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">
+                            123.000 VNĐ
+                        </p>
+                        <!-- Nút Thêm vào giỏ hàng -->
+                        <div class="mt-auto">
+                            <form th:action="@{/cart/add}" method="post">
+                                <input type="hidden" name="productId" th:value="${product.id}" />
+                                <input type="hidden" name="quantity" value="1" />
+                                <button type="submit" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-cart-plus"></i> Thêm vào giỏ
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-lg-4">
-            <h2>Fast Shipping</h2>
-            <p>Get your books delivered to your doorstep quickly.</p>
-        </div>
-        <div class="col-lg-4">
-            <h2>Great Support</h2>
-            <p>Our team is here to help you with any questions.</p>
-        </div>
+
     </div>
 </section>
 
