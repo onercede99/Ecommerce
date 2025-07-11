@@ -1,66 +1,65 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/admin_layout}">
 <head>
-    <title>Admin - Order Management</title>
+    <title>Admin - Quản lý Đơn hàng</title>
 </head>
 <body>
 <section layout:fragment="content">
     <div class="container-fluid mt-4">
-        <h1 class="my-4">Order Management</h1>
+        <h1 class="my-4">Quản lý Đơn hàng</h1>
 
         <div th:if="${message}" class="alert alert-success text-center" th:text="${message}"></div>
         <div th:if="${errorMessage}" class="alert alert-danger text-center" th:text="${errorMessage}"></div>
 
-        <!-- Thêm một khối kiểm tra nếu không có đơn hàng nào -->
         <div th:if="${orders.isEmpty()}" class="alert alert-info text-center">
-            There are no orders to display.
+            Không có đơn hàng nào để hiển thị.
         </div>
 
         <div th:unless="${orders.isEmpty()}" class="table-responsive">
             <table class="table table-striped table-bordered table-hover">
                 <thead class="table-dark">
                 <tr>
-                    <th>Order ID</th>
-                    <th>Customer Name / Email</th>
-                    <th>Order Date</th>
-                    <th>Total Price</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+                    <th>Mã đơn hàng</th>
+                    <th>Tên khách hàng / Email</th>
+                    <th>Ngày đặt hàng</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
                 </tr>
                 </thead>
                 <tbody>
-                <!-- Dùng th:each để lặp qua danh sách đơn hàng -->
                 <tr th:each="order : ${orders}">
                     <td th:text="'#' + ${order.id}">#1</td>
 
-                    <!-- SỬA LỖI 1: Xử lý trường hợp User có thể bị null -->
-                    <!-- Toán tử "?." (safe navigation) sẽ tránh lỗi NullPointerException -->
-                    <td th:text="${order.user?.username ?: 'N/A'}">Guest User</td>
+                    <td th:text="${order.user?.username ?: order.customerName ?: 'Khách vãng lai'}">Khách vãng lai</td>
 
-                    <!-- SỬA LỖI 2: Xử lý trường hợp orderDate có thể bị null -->
                     <td>
                         <span th:if="${order.orderDate != null}"
                               th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}">
                         </span>
-                        <span th:if="${order.orderDate == null}">No Date</span>
+                        <span th:if="${order.orderDate == null}">Không có ngày</span>
                     </td>
 
-                    <!-- SỬA LỖI 3: Xử lý trường hợp totalPrice có thể bị null -->
-                    <td th:text="${order.totalPrice != null ? #numbers.formatDecimal(order.totalPrice, 1, 'COMMA', 2, 'POINT') : '0.00'}">
-                        $99.99
+                    <td th:text="${order.totalPrice != null ? #numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT') + ' VNĐ' : '0 VNĐ'}">
+                        0 VNĐ
                     </td>
 
                     <td>
                         <span class="badge"
-                              th:classappend="${order.status == 'PENDING' ? 'bg-warning text-dark' : (order.status == 'SHIPPED' ? 'bg-info text-dark' : (order.status == 'DELIVERED' ? 'bg-success' : 'bg-secondary'))}"
-                              th:text="${order.status}">
-                            PENDING
+                              th:classappend="${order.status.name() == 'PENDING' ? 'bg-warning text-dark' :
+               (order.status.name() == 'PROCESSING' ? 'bg-primary' :
+               (order.status.name() == 'SHIPPED' ? 'bg-info text-dark' :
+               (order.status.name() == 'DELIVERED' ? 'bg-success' :
+               (order.status.name() == 'COMPLETED' ? 'bg-success' :
+               (order.status.name() == 'CANCELED' ? 'bg-danger' :
+               (order.status.name() == 'REFUNDED' ? 'bg-secondary' : 'bg-secondary'))))))}"
+                              th:text="${#messages.msg('order.status.' + order.status.name())}">
                         </span>
                     </td>
                     <td>
-                        <a th:href="@{/admin/orders/{id}(id=${order.id})}" class="btn btn-sm btn-info">View Details</a>
+                        <a th:href="@{/admin/orders/{id}(id=${order.id})}" class="btn btn-sm btn-info">Xem chi tiết</a>
                     </td>
                 </tr>
                 </tbody>

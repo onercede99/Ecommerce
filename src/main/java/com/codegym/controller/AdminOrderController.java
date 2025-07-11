@@ -1,7 +1,10 @@
 package com.codegym.controller;
 
 import com.codegym.model.Order;
+import com.codegym.model.OrderStatus;
 import com.codegym.repository.OrderRepository;
+import com.codegym.service.IOrderService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,6 +16,9 @@ import java.util.List;
 @Controller
 @RequestMapping("/admin/orders")
 public class AdminOrderController {
+
+    @Autowired
+    private IOrderService orderService;
 
     private final OrderRepository orderRepository;
 
@@ -33,7 +39,8 @@ public class AdminOrderController {
     @GetMapping("/{id}")
     public String viewOrderDetail(@PathVariable("id") Long id, Model model, RedirectAttributes ra) {
         try {
-            Order order = orderRepository.findById(id)
+            // SỬ DỤNG PHƯƠNG THỨC MỚI TỪ SERVICE để tải chi tiết đơn hàng một cách eager
+            Order order = orderService.findByIdWithDetails(id) // Thay đổi từ orderRepository.findById
                     .orElseThrow(() -> new IllegalArgumentException("Order not found with id: " + id));
             model.addAttribute("order", order);
             return "admin/order/detail";
@@ -46,7 +53,7 @@ public class AdminOrderController {
     // 3. (Nâng cao) Cập nhật trạng thái đơn hàng
     @PostMapping("/update-status")
     public String updateOrderStatus(@RequestParam("orderId") Long orderId,
-                                    @RequestParam("status") String status,
+                                    @RequestParam("status") OrderStatus status,
                                     RedirectAttributes ra) {
         try {
             Order order = orderRepository.findById(orderId)

@@ -155,3 +155,21 @@ a, a:hover, a:focus {
 .alert {
     border-radius: 0.25rem;
 }
+
+/* === THÊM CSS MỚI CHO BIỂU ĐỒ === */
+.chart-container {
+    /* Đảm bảo flexbox/grid layout không can thiệp xấu */
+    /* position: relative; // Đã thêm inline style */
+    /* height: 400px; // Đã thêm inline style */
+    /* width: 100%; // Đã thêm inline style */
+}
+
+/* Chart.js tự động thêm kích thước nếu responsive: true và maintainAspectRatio: false
+   Nhưng bạn có thể thêm một số CSS để đảm bảo
+*/
+#dailyRevenueChart {
+    /* Nếu bạn muốn Chart.js tự điều chỉnh hoàn toàn, không cần các thuộc tính này */
+    /* width: 100% !important; */
+    /* height: 100% !important; */
+    /* max-height: 400px; */ /* Giới hạn chiều cao tối đa */
+}

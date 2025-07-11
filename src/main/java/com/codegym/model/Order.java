@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 
 @Entity
-@Table(name = "orders") // "order" là từ khóa trong SQL, nên dùng "orders"
+@Table(name = "orders")
 @Getter
 @Setter
 public class Order {
@@ -34,12 +34,13 @@ public class Order {
     private User user;
 
     @Column(nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
     @Column(length = 50, nullable = false)
     private String paymentMethod;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<OrderDetail> orderDetails = new ArrayList<>();
 
     public void addOrderDetail(OrderDetail detail) {
@@ -49,4 +50,5 @@ public class Order {
         this.orderDetails.add(detail);
         detail.setOrder(this);
     }
+
 }

@@ -1,6 +1,8 @@
 package com.codegym.service;
 
+import com.codegym.dto.ChartData;
 import com.codegym.dto.MonthlyRevenue;
+import com.codegym.model.OrderStatus;
 import com.codegym.repository.OrderRepository;
 import com.codegym.repository.ProductRepository;
 import com.codegym.repository.UserRepository;
@@ -9,14 +11,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 public class DashboardService implements IDashboardService{
 
-    @Autowired
+    @Autowired(required = false)
     private JdbcTemplate jdbcTemplate;
 
     private final UserRepository userRepository;
@@ -112,5 +115,47 @@ public class DashboardService implements IDashboardService{
         BigDecimal total = orderRepository.findTotalRevenueOfDeliveredOrders(); // Ví dụ
 
         return (total == null) ? BigDecimal.ZERO : total;
+    }
+
+    @Override
+    public ChartData getDailyRevenueChartData(int numberOfDays) {
+        // Sử dụng TreeMap để đảm bảo các ngày được sắp xếp và có thể dễ dàng điền dữ liệu
+        Map<LocalDate, Double> dailyRevenueMap = new TreeMap<>();
+
+        LocalDate today = LocalDate.now();
+        // Khởi tạo map với 0 doanh thu cho numberOfDays ngày gần nhất
+        for (int i = numberOfDays - 1; i >= 0; i--) {
+            LocalDate date = today.minusDays(i);
+            dailyRevenueMap.put(date, 0.0);
+        }
+
+        LocalDate startLocalDate = today.minusDays(numberOfDays - 1);
+        LocalDate endLocalDate = today;
+
+        Date startDate = Date.from(startLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date endDate = Date.from(endLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        List<Object[]> revenueDataFromDb = orderRepository.findDailyRevenueBetweenDates(
+                OrderStatus.DELIVERED.name(),
+                startDate,
+                endDate);
+        for (Object[] row : revenueDataFromDb) {
+            java.util.Date dateFromDb = (java.util.Date) row[0];
+            LocalDate date = new java.sql.Date(dateFromDb.getTime())
+                    .toLocalDate();
+
+            Double revenue = ((Number) row[1]).doubleValue();
+            dailyRevenueMap.put(date, revenue);
+        }
+
+        List<String> labels = new ArrayList<>();
+        List<Double> data = new ArrayList<>();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        for (Map.Entry<LocalDate, Double> entry : dailyRevenueMap.entrySet()) {
+            labels.add(entry.getKey().format(formatter));
+            data.add(entry.getValue());
+        }
+
+        return new ChartData(labels, data);
     }
 }

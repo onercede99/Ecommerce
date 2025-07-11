@@ -1,25 +1,23 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/admin_layout}">
 <head>
-  <title>Admin Dashboard</title>
+  <title>Bảng điều khiển quản trị</title>
 </head>
 <body>
 
 <section layout:fragment="content">
   <div class="container-fluid mt-4">
-    <h1 class="mb-4">Admin Dashboard</h1>
+    <h1 class="mb-4">Bảng điều khiển quản trị</h1>
 
-    <!-- ================== KHỐI THẺ THỐNG KÊ ĐÃ SỬA ================== -->
     <div class="row" th:if="${stats != null}">
-      <!-- Thẻ thống kê cho Users -->
       <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-primary shadow h-100 py-2">
           <div class="card-body">
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Users</div>
+                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Tổng số Người dùng</div>
                 <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${stats.totalUsers}">0</div>
               </div>
             </div>
@@ -27,13 +25,12 @@
         </div>
       </div>
 
-      <!-- Thẻ thống kê cho Products -->
       <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-success shadow h-100 py-2">
           <div class="card-body">
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Products</div>
+                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Tổng số Sản phẩm</div>
                 <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${stats.totalProducts}">0</div>
               </div>
             </div>
@@ -41,13 +38,12 @@
         </div>
       </div>
 
-      <!-- Thẻ thống kê cho Orders -->
       <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-info shadow h-100 py-2">
           <div class="card-body">
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Orders</div>
+                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Tổng số Đơn hàng</div>
                 <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${stats.totalOrders}">0</div>
               </div>
             </div>
@@ -55,14 +51,13 @@
         </div>
       </div>
 
-      <!-- Thẻ thống kê cho Revenue -->
       <div class="col-xl-3 col-md-6 mb-4">
         <div class="card border-left-warning shadow h-100 py-2">
           <div class="card-body">
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Total Revenue (Delivered)</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="'$' + ${#numbers.formatDecimal(stats.totalRevenue, 1, 'COMMA', 2, 'POINT')}">$0.00</div>
+                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Tổng Doanh thu (Đã giao)</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="${#numbers.formatDecimal(stats.totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">0 VNĐ</div>
               </div>
             </div>
           </div>
@@ -70,30 +65,25 @@
       </div>
     </div>
 
-    <!-- ================== BIỂU ĐỒ DOANH THU ================== -->
     <div class="card mt-4">
       <div class="card-header">
-        Monthly Revenue Chart (Current Year)
+        Biểu đồ Doanh thu (30 ngày gần nhất)
       </div>
       <div class="card-body">
-        <canvas id="monthlyRevenueChart"></canvas>
+        <div class="chart-container" style="position: relative; height:400px; width:100%">
+          <canvas id="dailyRevenueChart"></canvas>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- ===== SCRIPT ĐỂ VẼ BIỂU ĐỒ ===== -->
-  <!-- Đặt script ở cuối cùng để đảm bảo các element HTML đã được tải -->
   <script layout:fragment="scripts" th:inline="javascript">
     /*<![CDATA[*/
-    // Mã JavaScript nằm trong CDATA để tránh các vấn đề về parsing của XML/HTML
     document.addEventListener("DOMContentLoaded", function() {
-      // Lấy thẻ canvas
-      const ctx = document.getElementById('monthlyRevenueChart');
+      const ctx = document.getElementById('dailyRevenueChart');
 
-      // Kiểm tra xem canvas có tồn tại không
       if (ctx) {
-        // Fetch data từ API endpoint
-        fetch('/admin/api/chart-data')
+        fetch('/admin/api/daily-revenue-chart-data')
                 .then(response => {
                   if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -101,25 +91,70 @@
                   return response.json();
                 })
                 .then(chartData => {
-                  new Chart(ctx, { // Rút gọn ctx.getContext('2d')
-                    type: 'bar',
+                  new Chart(ctx, {
+                    type: 'bar', // Hoặc 'line' cho biểu đồ doanh thu theo thời gian
                     data: {
-                      labels: chartData.labels, // ["Tháng 1", "Tháng 2", ...]
+                      labels: chartData.labels,
                       datasets: [{
-                        label: 'Revenue ($)',
-                        data: chartData.data, // [100, 200, ...]
+                        label: 'Doanh thu (VNĐ)',
+                        data: chartData.data,
                         backgroundColor: 'rgba(54, 162, 235, 0.5)',
                         borderColor: 'rgb(54, 162, 235)',
                         borderWidth: 1
                       }]
                     },
                     options: {
+                      responsive: true,
+                      maintainAspectRatio: false, // Quan trọng: Tắt duy trì tỷ lệ khung hình
+                      plugins: {
+                        legend: {
+                          display: true,
+                          position: 'top',
+                        },
+                        title: {
+                          display: true,
+                          text: 'Doanh thu 30 ngày gần nhất',
+                          font: {
+                            size: 16
+                          }
+                        },
+                        tooltip: {
+                          callbacks: {
+                            label: function(context) {
+                              let label = context.dataset.label || '';
+                              if (label) {
+                                label += ': ';
+                              }
+                              if (context.parsed.y !== null) {
+                                label += context.parsed.y.toLocaleString('vi-VN') + ' VNĐ';
+                              }
+                              return label;
+                            }
+                          }
+                        }
+                      },
                       scales: {
+                        x: {
+                          beginAtZero: true,
+                          title: {
+                            display: true,
+                            text: 'Ngày'
+                          },
+                          ticks: {
+                            autoSkip: true, // Tự động bỏ qua nhãn nếu quá nhiều
+                            maxRotation: 45, // Xoay nhãn để tránh chồng chéo
+                            minRotation: 0 // Đảm bảo không quay quá mức
+                          }
+                        },
                         y: {
                           beginAtZero: true,
+                          title: {
+                            display: true,
+                            text: 'Doanh thu (VNĐ)'
+                          },
                           ticks: {
                             callback: function(value) {
-                              return '$' + value.toLocaleString();
+                              return value.toLocaleString('vi-VN') + ' VNĐ';
                             }
                           }
                         }
@@ -127,7 +162,7 @@
                     }
                   });
                 })
-                .catch(error => console.error('Error fetching or rendering chart:', error));
+                .catch(error => console.error('Lỗi khi lấy hoặc hiển thị biểu đồ:', error));
       }
     });
     /*]]>*/

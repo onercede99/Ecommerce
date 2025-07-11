@@ -1,5 +1,6 @@
 package com.codegym.controller;
 
+import com.codegym.dto.ChartData;
 import com.codegym.dto.DashboardStatsDto;
 import com.codegym.repository.ProductRepository;
 import com.codegym.repository.UserRepository;
@@ -60,6 +61,13 @@ public class AdminDashboardController {
     public ResponseEntity<Map<String, Object>> getChartData() {
         Map<String, Object> chartData = dashboardService.getChartData();
         return ResponseEntity.ok(chartData);
+    }
+
+    @GetMapping("/api/daily-revenue-chart-data")
+    @ResponseBody // Annotation này báo cho Spring trả về JSON
+    public ChartData getDailyRevenueChartData() {
+        int numberOfDays = 30; // Bạn có thể tùy chỉnh số ngày ở đây
+        return dashboardService.getDailyRevenueChartData(numberOfDays);
     }
 
     @GetMapping("/home")

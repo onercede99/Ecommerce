@@ -12,6 +12,7 @@ public interface IOrderService {
     BigDecimal calculateTotalRevenue();
     List<Order> findByUser(User user);
     Optional<Order> findOrderByIdForUser(Long orderId, User user);
+    Optional<Order> findByIdWithDetails(Long id);
 
 
 }

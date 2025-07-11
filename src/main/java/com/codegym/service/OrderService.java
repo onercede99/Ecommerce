@@ -2,10 +2,7 @@ package com.codegym.service;
 
 import com.codegym.dto.CartDto;
 import com.codegym.dto.CartItemDto;
-import com.codegym.model.Order;
-import com.codegym.model.OrderDetail;
-import com.codegym.model.Product;
-import com.codegym.model.User;
+import com.codegym.model.*;
 import com.codegym.repository.OrderRepository;
 import com.codegym.repository.ProductRepository;
 import com.codegym.repository.UserRepository;
@@ -50,7 +47,6 @@ public class OrderService implements IOrderService{
             throw new IllegalStateException("Cannot create order from an empty cart.");
         }
 
-        // 2. Tạo một đối tượng Order mới
         Order order = new Order();
         order.setCustomerName(customerName);
         order.setShippingAddress(shippingAddress);
@@ -58,7 +54,7 @@ public class OrderService implements IOrderService{
         order.setEmail(email);
         order.setNotes(notes);
         order.setOrderDate(LocalDateTime.now());
-        order.setStatus("PENDING");
+        order.setStatus(OrderStatus.PENDING);
         order.setTotalPrice(cart.getTotalPrice());
         order.setPaymentMethod(paymentMethod);
 
@@ -100,7 +96,6 @@ public class OrderService implements IOrderService{
 
     @Override
     public BigDecimal calculateTotalRevenue() {
-        // Gọi phương thức từ repository
         BigDecimal total = orderRepository.findTotalRevenue();
 
         if (total == null) {
@@ -121,5 +116,10 @@ public class OrderService implements IOrderService{
             return Optional.empty();
         }
         return orderRepository.findByIdAndUserIdWithDetails(orderId, user.getId());
+    }
+
+    @Override
+    public Optional<Order> findByIdWithDetails(Long id) {
+        return orderRepository.findByIdWithDetails(id);
     }
 }
