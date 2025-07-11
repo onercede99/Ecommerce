@@ -3,40 +3,40 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/admin_layout}">
 <head>
-    <title>Admin - Category Management</title>
+    <title>Quản lý danh mục - Admin</title>
 </head>
 <body>
 <main layout:fragment="content" class="container my-4">
-        <div class="d-flex justify-content-between align-items-center my-4">
-            <h1>Category Management</h1>
-            <a th:href="@{/admin/categories/add}" class="btn btn-primary">Add New Category</a>
-        </div>
+    <div class="d-flex justify-content-between align-items-center my-4">
+        <h1>Quản lý danh mục</h1>
+        <a th:href="@{/admin/categories/add}" class="btn btn-primary">Thêm danh mục mới</a>
+    </div>
 
-        <div th:if="${message}" class="alert alert-success text-center" th:text="${message}"></div>
-        <div th:if="${errorMessage}" class="alert alert-danger text-center" th:text="${errorMessage}"></div>
+    <div th:if="${message}" class="alert alert-success text-center" th:text="${message}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger text-center" th:text="${errorMessage}"></div>
 
-        <table class="table table-striped table-bordered">
-            <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Category Name</th>
-                <th>Product Count</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="category : ${categories}">
-                <td th:text="${category.id}">1</td>
-                <td th:text="${category.name}">Programming Books</td>
-                <td th:text="${#lists.size(category.products)}">5</td>
-                <td>
-                    <a th:href="@{/admin/categories/edit/{id}(id=${category.id})}" class="btn btn-sm btn-warning">Edit</a>
-                    <a th:href="@{/admin/categories/delete/{id}(id=${category.id})}" class="btn btn-sm btn-danger"
-                       onclick="return confirm('Are you sure you want to delete this category?')">Delete</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Tên danh mục</th>
+            <th>Số lượng sản phẩm</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="category : ${categories}">
+            <td th:text="${category.id}">1</td>
+            <td th:text="${category.name}">Sách Lập trình</td>
+            <td th:text="${#lists.size(category.products)}">5</td>
+            <td>
+                <a th:href="@{/admin/categories/edit/{id}(id=${category.id})}" class="btn btn-sm btn-warning">Sửa</a>
+                <a th:href="@{/admin/categories/delete/{id}(id=${category.id})}" class="btn btn-sm btn-danger"
+                   onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này không?')">Xóa</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </main>
 <th:block layout:fragment="css"></th:block>
 <th:block layout:fragment="script"></th:block>

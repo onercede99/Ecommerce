@@ -3,53 +3,54 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/admin_layout}">
 <head>
-  <title>Order Detail - #[[${order.id}]]</title>
+  <title>Chi tiết đơn hàng - #[[${order.id}]]</title>
 </head>
 <body>
 <section layout:fragment="content">
   <div class="container">
-    <h1 class="my-4">Order Detail - #[[${order.id}]]</h1>
+    <h1 class="my-4">Chi tiết đơn hàng - #[[${order.id}]]</h1>
 
     <div th:if="${message}" class="alert alert-success text-center" th:text="${message}"></div>
     <div th:if="${errorMessage}" class="alert alert-danger text-center" th:text="${errorMessage}"></div>
 
     <div class="row">
-      <!-- Customer & Order Info -->
       <div class="col-md-6">
         <div class="card mb-4">
           <div class="card-header">
-            Customer Information
+            Thông tin khách hàng
           </div>
           <div class="card-body">
-            <p><strong>Name:</strong> <span th:text="${order.customerName}"></span></p>
-            <p><strong>Address:</strong> <span th:text="${order.shippingAddress}"></span></p>
-            <p><strong>Phone:</strong> <span th:text="${order.phoneNumber}"></span></p>
+            <p><strong>Tên:</strong> <span th:text="${order.customerName}"></span></p>
+            <p><strong>Địa chỉ:</strong> <span th:text="${order.shippingAddress}"></span></p>
+            <p><strong>Điện thoại:</strong> <span th:text="${order.phoneNumber}"></span></p>
             <p><strong>Email:</strong> <span th:text="${order.email}"></span></p>
           </div>
         </div>
         <div class="card">
           <div class="card-header">
-            Order Status
+            Trạng thái đơn hàng
           </div>
           <div class="card-body">
             <form th:action="@{/admin/orders/update-status}" method="post">
               <input type="hidden" name="orderId" th:value="${order.id}">
               <div class="input-group">
                 <select name="status" class="form-select">
-                  <option value="PENDING" th:selected="${order.status == 'PENDING'}">Pending</option>
-                  <option value="SHIPPED" th:selected="${order.status == 'SHIPPED'}">Shipped</option>
-                  <option value="DELIVERED" th:selected="${order.status == 'DELIVERED'}">Delivered</option>
-                  <option value="CANCELLED" th:selected="${order.status == 'CANCELLED'}">Cancelled</option>
+                  <option value="PENDING" th:selected="${order.status == 'PENDING'}">Đang chờ xác nhận</option>
+                  <option value="PROCESSING" th:selected="${order.status == 'PROCESSING'}">Đang xử lý</option>
+                  <option value="SHIPPED" th:selected="${order.status == 'SHIPPED'}">Đã vận chuyển</option>
+                  <option value="DELIVERED" th:selected="${order.status == 'DELIVERED'}">Đã giao hàng</option>
+                  <option value="COMPLETED" th:selected="${order.status == 'COMPLETED'}">Hoàn thành</option>
+                  <option value="CANCELED" th:selected="${order.status == 'CANCELED'}">Đã hủy</option>
+                  <option value="REFUNDED" th:selected="${order.status == 'REFUNDED'}">Đã hoàn tiền</option>
                 </select>
-                <button type="submit" class="btn btn-primary">Update</button>
+                <button type="submit" class="btn btn-primary">Cập nhật</button>
               </div>
             </form>
           </div>
         </div>
       </div>
-      <!-- Order Items -->
       <div class="col-md-6">
-        <h4>Order Items</h4>
+        <h4>Các mặt hàng trong đơn hàng</h4>
         <table class="table">
           <tbody>
           <tr th:each="detail : ${order.orderDetails}">
@@ -62,7 +63,7 @@
             </td>
           </tr>
           <tr class="fw-bold">
-            <td class="text-end" colspan="1">Total:</td>
+            <td class="text-end" colspan="1">Tổng cộng:</td>
             <td class="text-end" th:text="'$' + ${#numbers.formatDecimal(order.totalPrice, 1, 'COMMA', 2, 'POINT')}"></td>
           </tr>
           </tbody>
@@ -70,7 +71,7 @@
       </div>
     </div>
 
-    <a th:href="@{/admin/orders}" class="btn btn-secondary mt-4">Back to Order List</a>
+    <a th:href="@{/admin/orders}" class="btn btn-secondary mt-4">Quay lại danh sách đơn hàng</a>
   </div>
 </section>
 </body>

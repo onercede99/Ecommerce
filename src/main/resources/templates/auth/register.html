@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/client_layout}">
 <head>
-  <title>Register Account</title>
+  <title>Đăng ký tài khoản</title>
 </head>
 <body>
 
@@ -12,20 +12,20 @@
     <div class="row justify-content-center">
       <div class="col-md-6 col-lg-5">
         <div class="card p-4 shadow-sm">
-          <h2 class="text-center mb-4">Create an Account</h2>
+          <h2 class="text-center mb-4">Tạo tài khoản mới</h2>
+
+          <!-- Hiển thị lỗi chung từ Controller (ví dụ: email/username đã tồn tại) -->
+          <!-- Giữ lại th:text="${errorMessage}" để hiển thị lỗi từ Controller (nếu bạn truyền trực tiếp chuỗi tiếng Việt) -->
+          <!-- Nếu bạn truyền key từ messages.properties, hãy dùng th:text="${#messages.msg(errorMessageKey)}" -->
+          <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}">
+          </div>
 
           <!-- Form đăng ký -->
-          <!-- th:object="${user}" khớp với tên model trong AuthController -->
           <form th:action="@{/register}" th:object="${user}" method="post">
-
-            <!-- Hiển thị lỗi chung từ Controller (ví dụ: email/username đã tồn tại) -->
-            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}">
-            </div>
 
             <!-- Trường Username -->
             <div class="mb-3">
-              <label for="username" class="form-label">Username</label>
-              <!-- th:field="*{username}" khớp với trường 'username' trong RegisterDto -->
+              <label for="username" class="form-label">Tên đăng nhập</label>
               <input type="text" th:field="*{username}" class="form-control" id="username" required>
               <!-- Hiển thị lỗi validation cho trường 'username' -->
               <div class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
@@ -34,7 +34,6 @@
             <!-- Trường Email -->
             <div class="mb-3">
               <label for="email" class="form-label">Email</label>
-              <!-- th:field="*{email}" khớp với trường 'email' trong RegisterDto -->
               <input type="email" th:field="*{email}" class="form-control" id="email" required>
               <!-- Hiển thị lỗi validation cho trường 'email' -->
               <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
@@ -42,20 +41,19 @@
 
             <!-- Trường Password -->
             <div class="mb-3">
-              <label for="password" class="form-label">Password</label>
-              <!-- th:field="*{password}" khớp với trường 'password' trong RegisterDto -->
+              <label for="password" class="form-label">Mật khẩu</label>
               <input type="password" th:field="*{password}" class="form-control" id="password" required>
               <!-- Hiển thị lỗi validation cho trường 'password' -->
               <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
             </div>
 
             <div class="d-grid">
-              <button type="submit" class="btn btn-primary">Register</button>
+              <button type="submit" class="btn btn-primary">Đăng ký</button>
             </div>
           </form>
 
           <p class="mt-3 text-center">
-            Already have an account? <a th:href="@{/login}">Login here</a>
+            Đã có tài khoản? <a th:href="@{/login}">Đăng nhập tại đây</a>
           </p>
         </div>
       </div>
