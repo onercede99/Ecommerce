@@ -1,33 +1,27 @@
-<!-- Dùng th:fragment để định nghĩa một fragment tên là 'footer' -->
-<footer class="site-footer bg-dark text-white pt-5 pb-4" th:fragment="footer">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-4 mb-4 mb-md-0">
-        <h5>Về Chúng Tôi</h5>
-        <p class="text-white-50">Chúng tôi là nhà cung cấp hàng đầu các đầu sách chất lượng dành cho lập trình viên và những người đam mê công nghệ trên toàn thế giới.</p>
-      </div>
-      <div class="col-md-4 mb-4 mb-md-0">
-        <h5>Liên Kết Nhanh</h5>
-        <ul class="list-unstyled">
-          <li><a class="text-white-50 text-decoration-none" th:href="@{/}">Trang Chủ</a></li>
-          <li><a class="text-white-50 text-decoration-none" th:href="@{/products}">Sản Phẩm</a></li>
-          <!-- Thêm các link khác nếu cần -->
-          <li><a class="text-white-50 text-decoration-none" href="#">Chính Sách & Điều Khoản</a></li>
-        </ul>
-      </div>
-      <div class="col-md-4">
-        <h5>Liên Hệ</h5>
-        <ul class="list-unstyled text-white-50">
-          <li><i class="fas fa-envelope me-2"></i>Email: support@ecommerce.com</li>
-          <li><i class="fas fa-phone me-2"></i>Điện thoại: +84 123 456 789</li>
-          <li><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ: TP. Hồ Chí Minh, Việt Nam</li>
-        </ul>
-      </div>
+<footer class="site-footer bg-light text-dark pt-5 pb-4" th:fragment="footer"> <div class="container">
+  <div class="row">
+    <div class="col-md-4 mb-4 mb-md-0">
+      <h5 class="text-primary">Về Chúng Tôi</h5> <p class="text-muted">Chúng tôi là nhà cung cấp hàng đầu các đầu sách chất lượng dành cho lập trình viên và những người đam mê công nghệ trên toàn thế giới.</p>
     </div>
-    <div class="row footer-bottom mt-4 pt-4 border-top border-secondary">
-      <div class="col-md-12 text-center text-white-50">
-        <p>© 2024 Cửa Hàng Sách. Bảo lưu mọi quyền.</p>
-      </div>
+    <div class="col-md-4 mb-4 mb-md-0">
+      <h5 class="text-primary">Liên Kết Nhanh</h5> <ul class="list-unstyled">
+      <li><a class="text-muted text-decoration-none" th:href="@{/}">Trang Chủ</a></li>
+      <li><a class="text-muted text-decoration-none" th:href="@{/products}">Sản Phẩm</a></li>
+      <li><a class="text-muted text-decoration-none" href="#">Chính Sách & Điều Khoản</a></li>
+    </ul>
+    </div>
+    <div class="col-md-4">
+      <h5 class="text-primary">Liên Hệ</h5> <ul class="list-unstyled text-muted">
+      <li><i class="fas fa-envelope me-2"></i>Email: support@ecommerce.com</li>
+      <li><i class="fas fa-phone me-2"></i>Điện thoại: +84 123 456 789</li>
+      <li><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ: TP. Hồ Chí Minh, Việt Nam</li>
+    </ul>
     </div>
   </div>
+  <div class="row footer-bottom mt-4 pt-4 border-top border-muted">
+    <div class="col-md-12 text-center text-muted">
+      <p>© 2024 Cửa Hàng Sách. Bảo lưu mọi quyền.</p>
+    </div>
+  </div>
+</div>
 </footer>
