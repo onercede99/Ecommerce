@@ -7,87 +7,90 @@
 </head>
 <body>
 <section layout:fragment="content" class="container my-5">
-  <h1 class="my-4">Giỏ Hàng Của Bạn</h1>
+  <h1 class="my-4 fw-bold">Giỏ Hàng</h1>
 
-  <!-- TRƯỜNG HỢP GIỎ HÀNG TRỐNG -->
-  <div th:if="${cart == null or cart.items.isEmpty()}">
-    <div class="alert alert-info text-center p-5">
-      <h4>Giỏ hàng của bạn đang trống.</h4>
-      <p class="lead">Hãy khám phá các sản phẩm tuyệt vời của chúng tôi!</p>
-      <a th:href="@{/products}" class="btn btn-primary mt-3">Tiếp tục mua sắm</a>
-    </div>
-  </div>
-
-  <!-- TRƯỜNG HỢP GIỎ HÀNG CÓ SẢN PHẨM -->
-  <div th:if="${cart != null and !cart.items.isEmpty()}">
-    <div class="row">
-      <!-- Cột trái: Danh sách sản phẩm trong giỏ -->
-      <div class="col-lg-8">
-        <div class="d-flex justify-content-end mb-3">
-          <form th:action="@{/cart/clear}" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa tất cả sản phẩm khỏi giỏ hàng?');">
-            <button type="submit" class="btn btn-outline-danger btn-sm">
-              <i class="fas fa-trash me-1"></i> Xóa tất cả
-            </button>
-          </form>
-        </div>
-        <div class="table-responsive">
-          <table class="table align-middle">
-            <thead class="table-light">
-            <tr>
-              <th scope="col">Sản phẩm</th>
-              <th scope="col">Đơn giá</th>
-              <th scope="col" style="width: 120px;">Số lượng</th>
-              <th scope="col" class="text-end">Thành tiền</th>
-              <th scope="col" class="text-center">Xóa</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="item : ${cart.items.values()}">
-              <td>
-                <div class="d-flex align-items-center">
-                  <img th:src="@{${item.product.getPhotosImagePath()}}" width="70" class="img-thumbnail me-3">
-                  <a th:href="@{/products/{id}(id=${item.product.id})}" class="text-dark text-decoration-none" th:text="${item.product.name}">Tên sản phẩm</a>
-                </div>
-              </td>
-              <td th:text="${#numbers.formatDecimal(item.product.price, 0, 'POINT', 0, 'COMMA')} + ' ₫'">Đơn giá</td>
-              <td>
-                <!-- Form cập nhật số lượng, tự động submit khi thay đổi -->
-                <form th:action="@{/cart/update}" method="post">
-                  <input type="hidden" name="productId" th:value="${item.product.id}">
-                  <input type="number" name="quantity" th:value="${item.quantity}"
-                         class="form-control form-control-sm" style="width: 80px;" min="1"
-                         onchange="this.form.submit()">
-                </form>
-              </td>
-              <td class="text-end fw-bold" th:text="${#numbers.formatDecimal(item.getSubtotal(), 0, 'POINT', 0, 'COMMA')} + ' ₫'">Thành tiền</td>
-              <td class="text-center">
-                <a th:href="@{/cart/remove/{id}(id=${item.product.id})}" class="btn btn-sm btn-outline-danger" title="Xóa sản phẩm">
-                  <i class="fas fa-times"></i>
-                </a>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
+  <div id="cart-content">
+    <div class="cart-loader-overlay" id="cart-loader" style="display: none;">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
       </div>
+    </div>
+    <!-- TRƯỜNG HỢP GIỎ HÀNG TRỐNG -->
+    <div th:if="${cart == null or cart.items.isEmpty()}" id="empty-cart-message">
+      <div class="alert alert-info text-center p-5">
+        <h4>Giỏ hàng của bạn đang trống.</h4>
+        <p class="lead">Hãy khám phá các sản phẩm tuyệt vời của chúng tôi!</p>
+        <a th:href="@{/products}" class="btn btn-primary mt-3">Tiếp tục mua sắm</a>
+      </div>
+    </div>
 
-      <!-- Cột phải: Tóm tắt giỏ hàng -->
-      <div class="col-lg-4">
-        <div class="card shadow-sm">
-          <div class="card-body">
-            <h4 class="card-title mb-3">Tóm Tắt Đơn Hàng</h4>
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                Tổng số sản phẩm
-                <span class="badge bg-secondary rounded-pill" th:text="${cart.totalItems}">0</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                <strong>Tổng Cộng</strong>
-                <strong class="text-primary fs-5" th:text="${#numbers.formatDecimal(cart.totalPrice, 0, 'POINT', 0, 'COMMA')} + ' ₫'">0 ₫</strong>
-              </li>
-            </ul>
-            <div class="d-grid mt-3">
-              <a th:href="@{/checkout}" class="btn btn-primary btn-lg">Tiến Hành Thanh Toán</a>
+    <!-- TRƯỜNG HỢP GIỎ HÀNG CÓ SẢN PHẨM -->
+    <div th:if="${cart != null and !cart.items.isEmpty()}" id="cart-details">
+      <div class="row">
+        <!-- Cột trái: Danh sách sản phẩm -->
+        <div class="col-lg-8">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">Bạn có <strong id="cart-header-item-count" th:text="${cart.totalItems}">0</strong> sản phẩm trong giỏ hàng</span>
+            <button id="clear-cart-btn" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash me-1"></i> Xóa tất cả</button>
+          </div>
+
+          <div class="cart-items-list">
+            <!-- Mỗi sản phẩm là một card -->
+            <div class="card cart-item mb-3" th:each="item : ${cart.items.values()}" th:id="'cart-item-' + ${item.product.id}" th:data-product-id="${item.product.id}">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <!-- Ảnh & Tên -->
+                  <div class="col-md-5 d-flex align-items-center">
+                    <img th:src="@{${item.product.getPhotosImagePath()}}" class="cart-item__image me-3">
+                    <div>
+                      <a th:href="@{/products/{id}(id=${item.product.id})}" class="cart-item__name" th:text="${item.product.name}"></a>
+                      <p class="cart-item__price" th:text="${#numbers.formatDecimal(item.product.price, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></p>
+                    </div>
+                  </div>
+                  <!-- Số lượng -->
+                  <div class="col-md-3 d-flex justify-content-center">
+                    <div class="quantity-selector">
+                      <button type="button" class="btn btn-outline-secondary quantity-btn" data-action="decrease">-</button>
+                      <input type="text" class="form-control text-center quantity-input" th:value="${item.quantity}" readonly>
+                      <button type="button" class="btn btn-outline-secondary quantity-btn" data-action="increase">+</button>
+                    </div>
+                  </div>
+                  <!-- Thành tiền -->
+                  <div class="col-md-3 text-end">
+                    <span class="cart-item__subtotal fw-bold" th:id="'subtotal-' + ${item.product.id}" th:text="${#numbers.formatDecimal(item.getSubtotal(), 0, 'POINT', 0, 'COMMA')} + ' ₫'"></span>
+                  </div>
+                  <!-- Nút xóa -->
+                  <div class="col-md-1 text-end">
+                    <button class="btn btn-sm btn-outline-danger remove-item-btn"><i class="fas fa-times"></i></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cột phải: Tóm tắt đơn hàng -->
+        <div class="col-lg-4">
+          <div class="card shadow-sm sticky-top" style="top: 100px;">
+            <div class="card-body">
+              <h4 class="card-title mb-3">Tóm Tắt Đơn Hàng</h4>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                  <span>Tạm tính (<span id="summary-item-count" th:text="${cart.totalItems}">0</span> sản phẩm)</span>
+                  <span id="summary-subtotal" th:text="${#numbers.formatDecimal(cart.totalPrice, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                  <span>Phí vận chuyển</span>
+                  <span>Miễn phí</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center px-0 border-top pt-3">
+                  <strong>Tổng Cộng</strong>
+                  <strong class="text-primary fs-5" id="summary-total-price" th:text="${#numbers.formatDecimal(cart.totalPrice, 0, 'POINT', 0, 'COMMA')} + ' ₫'"></strong>
+                </li>
+              </ul>
+              <div class="d-grid mt-4">
+                <a th:href="@{/checkout}" class="btn btn-primary btn-lg">Tiến Hành Thanh Toán</a>
+              </div>
             </div>
           </div>
         </div>

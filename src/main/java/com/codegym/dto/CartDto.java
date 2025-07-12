@@ -9,16 +9,7 @@ import java.util.Map;
 @Data
 public class CartDto {
     private Map<Long, CartItemDto> items = new HashMap<>();
+    private int totalItems;
+    private BigDecimal totalPrice;
 
-    public BigDecimal getTotalPrice() {
-        return items.values().stream()
-                .map(CartItemDto::getSubtotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    public int getTotalItems() {
-        return items.values().stream()
-                .mapToInt(CartItemDto::getQuantity)
-                .sum();
-    }
 }

@@ -8,7 +8,6 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Meta tags cho CSRF (đã có từ trước) -->
   <meta name="_csrf" th:content="${_csrf.token}"/>
   <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 
@@ -33,38 +32,25 @@
 </head>
 
 <body>
-
-<!-- Header của trang -->
 <header th:replace="~{fragments/client_header :: header}"></header>
 
-<!-- Nội dung chính của từng trang -->
 <main class="container py-5">
   <div layout:fragment="content">
-    <!-- Nội dung của các trang con sẽ được chèn vào đây -->
     <p>Page content goes here</p>
   </div>
 </main>
 
-<!-- Footer của trang -->
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 
 
-<!-- ============================================= -->
-<!-- JAVASCRIPT ĐƯỢC ĐẶT Ở CUỐI ĐỂ TỐI ƯU TẢI TRANG -->
-<!-- ============================================= -->
-
-<!-- Bootstrap JS Bundle (đã bao gồm Popper) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:src="@{/js/main.js}"></script>
 
-<!-- jQuery (nếu một số plugin cần) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<!-- Custom JS của bạn (nếu có) -->
 <script th:src="@{/js/main.js}" th:if="${false}"></script> <!-- Tạm thời vô hiệu hóa, tạo file js/main.js khi cần -->
 
-<!-- Thêm một khối để các trang con có thể chèn script riêng -->
-<!-- Ví dụ: trang chi tiết sản phẩm cần script cho image gallery -->
 <th:block layout:fragment="scripts"></th:block>
+
 
 </body>
 </html>

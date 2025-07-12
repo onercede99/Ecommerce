@@ -255,3 +255,284 @@ a:hover {
 .pagination .page-item.active .page-link:hover {
     background-color: var(--primary-color);
 }
+
+/* --- NÂNG CẤP TRANG CHỦ --- */
+
+/* S1: Hero Section */
+.hero-section {
+    padding: 6rem 0;
+    background-color: #fff;
+}
+.hero-section__text {
+    padding-right: 2rem;
+}
+
+/* S2: Features Section */
+.features-section {
+    background-color: #fff;
+}
+.features-section__item {
+    padding: 2rem;
+    transition: var(--transition);
+}
+.features-section__item:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg);
+    border-radius: var(--border-radius-lg);
+}
+.features-section__icon-wrapper {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    border-radius: 50%;
+    background-color: var(--primary-color-light);
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+.features-section__item:hover .features-section__icon-wrapper {
+    background-color: var(--primary-color);
+    color: #fff;
+    transform: scale(1.1) rotate(15deg);
+}
+
+/* S3: Featured Products Section */
+.featured-products-section {
+    padding: 6rem 0;
+}
+
+/* S4: Newsletter Section */
+.newsletter-section {
+    background-color: #fff;
+}
+
+/* --- HIỆU ỨNG ANIMATION KHI CUỘN TRANG --- */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-on-scroll {
+    opacity: 0; /* Mặc định ẩn đi */
+}
+
+.animate-on-scroll.is-visible {
+    animation: fadeInUp 0.8s ease-out forwards;
+}
+
+/* --- NÂNG CẤP TRANG CHI TIẾT SẢN PHẨM --- */
+
+/* Thư viện ảnh */
+.product-gallery__main-image {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+}
+.product-gallery__main-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+.product-gallery__thumbnails {
+    display: flex;
+    gap: 0.75rem;
+}
+.thumbnail-item {
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: var(--border-radius-md);
+    padding: 3px;
+    transition: var(--transition);
+    flex-shrink: 0; /* Ngăn ảnh bị co lại */
+    width: 80px;
+    height: 80px;
+}
+.thumbnail-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--border-radius-sm);
+}
+.thumbnail-item:hover {
+    border-color: var(--primary-color-light);
+}
+.thumbnail-item.active {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Thông tin sản phẩm */
+.product-title {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+.product-price {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+.star-rating .fa-star {
+    font-size: 0.9rem;
+}
+.breadcrumb-item a {
+    text-decoration: none;
+}
+
+/* Bộ chọn số lượng */
+.quantity-selector {
+    display: flex;
+    width: 120px;
+    flex-shrink: 0;
+}
+.quantity-selector .quantity-btn {
+    width: 38px;
+    z-index: 1;
+}
+.quantity-selector .quantity-btn[data-action="decrease"] {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.quantity-selector .quantity-btn[data-action="increase"] {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.quantity-selector .quantity-input {
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+    box-shadow: none !important;
+    width: 44px;
+    flex-shrink: 1;
+}
+
+/* Hệ thống Tabs */
+.product-tabs .nav-link {
+    font-weight: 600;
+    color: var(--secondary-color);
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius-md) !important;
+    border: none;
+    margin-right: 0.5rem;
+}
+.product-tabs .nav-link.active, .product-tabs .nav-link:hover {
+    color: var(--primary-color-dark);
+    background-color: var(--primary-color-light);
+}
+#productTabContent .tab-pane {
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+}
+
+/* Mục đánh giá */
+.review-item {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+.review-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+.review-item__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+}
+.review-item__author {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+.review-item__date {
+    color: var(--secondary-color);
+    font-size: 0.85rem;
+}
+.review-item__comment {
+    color: var(--text-color);
+}
+
+.rating-input-group {
+    display: inline-block;
+    border: none;
+}
+.rating-input-group > input {
+    display: none;
+}
+.rating-input-group > label {
+    float: right;
+    cursor: pointer;
+    color: #ddd;
+    font-size: 2.2rem; /* Điều chỉnh kích thước sao ở đây */
+    transition: color 0.2s;
+}
+.rating-input-group:not(:checked) > label:hover,
+.rating-input-group:not(:checked) > label:hover ~ label {
+    color: #ffc107;
+}
+.rating-input-group > input:checked ~ label {
+    color: #ffc107;
+}
+/* --- NÂNG CẤP TRANG GIỎ HÀNG --- */
+.cart-items-list .cart-item {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    transition: var(--transition);
+}
+.cart-item__image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: var(--border-radius-md);
+}
+.cart-item__name {
+    font-weight: 600;
+    color: var(--dark-color);
+    text-decoration: none;
+    display: block;
+}
+.cart-item__name:hover {
+    color: var(--primary-color);
+}
+.cart-item__price {
+    color: var(--secondary-color);
+    margin-bottom: 0;
+    font-size: 0.9rem;
+}
+.cart-item__subtotal {
+    font-size: 1.1rem;
+    color: var(--dark-color);
+}
+/* CSS cho Lớp phủ tải của Giỏ hàng */
+#cart-content {
+    position: relative; /* Rất quan trọng */
+}
+.cart-loader-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--border-radius-lg);
+}

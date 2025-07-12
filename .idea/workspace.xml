@@ -5,12 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="41673b0a-7430-4b04-a73b-9ec33eaf51df" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/codegym/dto/ProductInCartDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/static/js/main.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/codegym/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/codegym/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/codegym/controller/CartApiController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/codegym/controller/CartApiController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/codegym/controller/GlobalControllerAdvice.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/codegym/controller/GlobalControllerAdvice.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/codegym/controller/ReviewController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/codegym/controller/ReviewController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/codegym/dto/CartDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/codegym/dto/CartDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/codegym/dto/CartItemDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/codegym/dto/CartItemDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/codegym/model/Cart.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/codegym/model/Cart.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/codegym/model/CartItemDb.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/codegym/model/CartItemDb.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/codegym/service/CartService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/codegym/service/CartService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/codegym/service/ICartService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/codegym/service/ICartService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/static/css/client_style.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/client_style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/fragments/client_header.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/fragments/client_header.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/fragments/footer.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/fragments/footer.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/layout.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/product/list.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/product/list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/cart/view.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/cart/view.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/home.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/home.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/layout/client_layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/layout/client_layout.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/product/detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/product/detail.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,6 +59,14 @@
       </state>
     </system>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -55,6 +75,9 @@
   "associatedIndex": 2
 }]]></component>
   <component name="ProjectId" id="2ziIZj57YQDGGgfDrCE4SKZ79Wv" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -133,7 +156,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1752207524300</updated>
-      <workItem from="1752207525743" duration="10175000" />
+      <workItem from="1752207525743" duration="19218000" />
     </task>
     <servers />
   </component>

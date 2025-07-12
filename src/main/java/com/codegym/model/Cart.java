@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,4 +24,24 @@ public class Cart {
     // Quan hệ 1-N với các món hàng trong giỏ
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<CartItemDb> items = new HashSet<>();
+
+    @Transient
+    public int getTotalItems() {
+        if (items == null) {
+            return 0;
+        }
+        return items.stream()
+                .mapToInt(CartItemDb::getQuantity)
+                .sum();
+    }
+
+    @Transient
+    public BigDecimal getTotalPrice() {
+        if (items == null) {
+            return BigDecimal.ZERO;
+        }
+        return items.stream()
+                .map(CartItemDb::getSubtotal) // Lấy subtotal (đã là BigDecimal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 }

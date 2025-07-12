@@ -11,10 +11,9 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartItemDto {
-    private Product product;
+    private ProductInCartDto product;
     private int quantity;
+    private BigDecimal subtotal;
 
-    public BigDecimal getSubtotal() {
-        return product.getPrice().multiply(new BigDecimal(quantity));
-    }
+
 }

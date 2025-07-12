@@ -12,9 +12,8 @@ public class GlobalControllerAdvice {
     @Autowired
     private ICartService cartService;
 
-    // Phương thức này cần HttpServletRequest để lấy session
     @ModelAttribute("cartItemCount")
     public int getCartItemCount(HttpServletRequest request) {
-        return cartService.getTotalItems(request.getSession()); // Truyền session
+        return cartService.getTotalItems(request.getSession());
     }
 }

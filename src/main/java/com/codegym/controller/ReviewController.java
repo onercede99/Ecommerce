@@ -31,7 +31,7 @@ public class ReviewController {
             redirectAttributes.addFlashAttribute("newReview", reviewDto);
 
             // Thêm một thông báo lỗi chung
-            redirectAttributes.addFlashAttribute("reviewError", "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại các trường được báo đỏ.");
+            redirectAttributes.addFlashAttribute("reviewError", "Bạn chỉ có thể đánh giá những sản phẩm bạn đã mua.");
 
             // Chuyển hướng về lại đúng trang sản phẩm
             return "redirect:/products/" + productId;
