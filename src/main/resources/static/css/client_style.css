@@ -5,31 +5,38 @@
 
 /* --- Biến màu và cài đặt chung --- */
 :root {
-    --primary-color: #0d6efd;
-    --primary-color-dark: #0a58ca;
-    --primary-color-light: #e7f0fe;
-    --secondary-color: #6c757d;
-    --success-color: #198754;
-    --light-color: #f8f9fa;
-    --dark-color: #212529;
-    --text-color: #495057;
-    --border-color: #dee2e6;
-    --body-font: 'Poppins', sans-serif;
+    /* Màu tím Indigo làm chủ đạo, rất hiện đại và công nghệ */
+    --primary-color: #4f46e5;
+    --primary-color-dark: #4338ca;
+    --primary-color-light: #e0e7ff;
+
+    --secondary-color: #64748b; /* Xám cho các yếu tố phụ */
+    --success-color: #16a34a;
+    --danger-color: #dc2626;
+
+    --background-color: #f8fafc; /* Nền xám rất nhạt, dịu mắt */
+    --surface-color: #ffffff;    /* Màu nền cho các card, component */
+    --border-color: #e2e8f0;
+
+    --text-color: #1e293b;        /* Xám đen cho văn bản chính */
+    --text-color-light: #475569;   /* Xám nhạt hơn cho mô tả */
+
+    --body-font: 'Inter', sans-serif; /* Font chữ mới, rất phổ biến cho UI/UX */
     --border-radius-sm: 0.25rem;
     --border-radius-md: 0.5rem;
-    --border-radius-lg: 0.8rem;
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --transition: all 0.3s ease-in-out;
+    --border-radius-lg: 0.75rem;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    --transition: all 0.2s ease-in-out;
 }
 
 /* --- Cài đặt cơ bản --- */
 body {
     font-family: var(--body-font);
-    background-color: #fff; /* Nền trắng sạch sẽ */
+    background-color: var(--background-color); /* Áp dụng màu nền mới */
     color: var(--text-color);
-    line-height: 1.6;
+    line-height: 1.7;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -535,4 +542,96 @@ a:hover {
     align-items: center;
     justify-content: center;
     border-radius: var(--border-radius-lg);
+}
+
+/* ========================================================== */
+/* === NÂNG CẤP HEADER & FOOTER ============================= */
+/* ========================================================== */
+
+/* --- Header --- */
+.site-header {
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: saturate(180%) blur(5px); /* Hiệu ứng kính mờ (glassmorphism) */
+    box-shadow: var(--shadow-sm);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky; /* Làm cho header dính ở trên */
+    top: 0;
+    z-index: 1030;
+    transition: box-shadow 0.2s ease;
+}
+
+.site-header .navbar-brand {
+    font-weight: 800; /* Đậm hơn */
+    font-size: 1.5rem;
+    color: var(--text-color) !important;
+}
+
+.site-header .nav-link {
+    color: var(--text-color-light) !important;
+    font-weight: 500;
+    position: relative;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius-md);
+    transition: var(--transition);
+}
+
+.site-header .nav-link:hover,
+.site-header .nav-item.active .nav-link {
+    color: var(--primary-color) !important;
+    background-color: var(--primary-color-light);
+}
+
+.site-header .cart-link .cart-badge {
+    position: absolute;
+    top: -2px;
+    right: -5px;
+    background-color: var(--danger-color);
+    color: white;
+    font-size: 0.65rem;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    border: 2px solid var(--surface-color);
+}
+
+/* --- Footer --- */
+.site-footer {
+    background-color: #111827; /* Màu nền tối, sang trọng */
+    color: #9ca3af; /* Màu chữ xám nhạt */
+    padding-top: 4rem;
+    padding-bottom: 2rem;
+}
+
+.site-footer h5 {
+    color: #ffffff; /* Tiêu đề màu trắng */
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+}
+
+.site-footer .list-unstyled a {
+    color: #9ca3af;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.site-footer .list-unstyled a:hover {
+    color: var(--primary-color);
+}
+
+.site-footer .list-unstyled li {
+    margin-bottom: 0.75rem;
+}
+
+.site-footer .footer-bottom {
+    border-top: 1px solid #374151; /* Đường kẻ phân cách */
+    padding-top: 2rem;
+    margin-top: 2rem;
+    font-size: 0.9rem;
 }

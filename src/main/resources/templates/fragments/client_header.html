@@ -1,53 +1,58 @@
-<header th:fragment="header" class="site-header"> <nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
-  <div class="container">
-    <a class="navbar-brand" th:href="@{/}">Cửa Hàng Sách</a>
+<header th:fragment="header" class="site-header">
+  <nav class="navbar navbar-expand-lg"> <!-- Bỏ các class padding, bg-white vì đã style trong CSS -->
+    <div class="container">
+      <a class="navbar-brand" th:href="@{/}">Cửa Hàng Sách</a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-    <div class="collapse navbar-collapse" id="navbarContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link" th:href="@{/}">Trang Chủ</a></li>
-        <li class="nav-item"><a class="nav-link" th:href="@{/products}">Sản Phẩm</a></li>
-      </ul>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <!-- Điều hướng chính đẩy sang trái -->
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" th:href="@{/}">Trang Chủ</a></li>
+          <li class="nav-item"><a class="nav-link" th:href="@{/products}">Sản Phẩm</a></li>
+        </ul>
 
-      <ul class="navbar-nav align-items-lg-center">
-        <li class="nav-item">
-          <a class="nav-link cart-link" th:href="@{/cart}">
-            <i class="fas fa-shopping-cart"></i> Giỏ Hàng
-            <span th:if="${cartItemCount > 0}" th:text="${cartItemCount}" class="cart-badge"></span>
-          </a>
-        </li>
+        <!-- Các nút hành động đẩy sang phải -->
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+          <li class="nav-item">
+            <a class="nav-link cart-link position-relative" th:href="@{/cart}"> <!-- Thêm position-relative -->
+              <i class="fas fa-shopping-cart"></i> Giỏ Hàng
+              <span th:if="${cartItemCount > 0}" th:text="${cartItemCount}" class="cart-badge"></span>
+            </a>
+          </li>
 
-        <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
-          <a class="nav-link btn btn-sm btn-outline-warning ms-lg-2 my-2 my-lg-0" th:href="@{/admin/home}">
-            <i class="fas fa-user-shield me-1"></i> Trang Quản Trị
-          </a>
-        </li>
+          <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'STAFF')">
+            <a class="nav-link" th:href="@{/admin/home}">Trang Quản Trị</a>
+          </li>
 
-        <li class="nav-item" sec:authorize="!isAuthenticated()">
-          <a class="nav-link btn btn-primary ms-lg-2 my-2 my-lg-0" th:href="@{/login}">Đăng Nhập</a>
-        </li>
+          <!-- Nhóm nút Đăng nhập/Đăng ký khi chưa login -->
+          <li class="nav-item d-flex gap-2 ms-lg-3" sec:authorize="!isAuthenticated()">
+            <a class="btn btn-outline-secondary btn-sm" th:href="@{/register}">Đăng Ký</a>
+            <a class="btn btn-primary btn-sm" th:href="@{/login}">Đăng Nhập</a>
+          </li>
 
-        <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-user"></i> Chào, <span sec:authentication="principal.username">User</span>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownUser">
-            <li><a class="dropdown-item" th:href="@{/account}"><i class="fas fa-id-card me-2"></i>Tài Khoản Của Tôi</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li>
-              <form th:action="@{/logout}" method="post" class="d-inline">
-                <button type="submit" class="dropdown-item">
-                  <i class="fas fa-sign-out-alt me-2"></i>Đăng Xuất
-                </button>
-              </form>
-            </li>
-          </ul>
-        </li>
-      </ul>
+          <!-- Dropdown khi đã login -->
+          <li class="nav-item dropdown ms-lg-3" sec:authorize="isAuthenticated()">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+              <i class="fas fa-user-circle me-2 fs-5"></i>
+              <span sec:authentication="principal.username">User</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" th:href="@{/account}"><i class="fas fa-id-card me-2"></i>Tài Khoản</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <form th:action="@{/logout}" method="post" class="d-inline">
+                  <button type="submit" class="dropdown-item text-danger">
+                    <i class="fas fa-sign-out-alt me-2"></i>Đăng Xuất
+                  </button>
+                </form>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
-</nav>
+  </nav>
 </header>
