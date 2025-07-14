@@ -1,72 +1,63 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/admin_layout}">
 <head>
-  <title>Admin - Product Management</title>
+  <title>Admin - Quản lý Sản phẩm</title>
 </head>
 <body>
 <section layout:fragment="content">
 
-  <!-- Tiêu đề trang, sử dụng class page-title từ CSS chung -->
-  <h1 class="page-title">Product Management</h1>
+  <h1 class="page-title">Quản lý Sản phẩm</h1>
 
-  <!-- Sử dụng Card để bao bọc toàn bộ nội dung -->
   <div class="card shadow-sm">
     <div class="card-header bg-light">
       <div class="d-flex justify-content-between align-items-center">
-        <!-- Form tìm kiếm -->
         <form th:action="@{/admin/products}" method="get" class="d-flex w-50">
-          <input class="form-control me-2" type="search" placeholder="Search by name..."
+          <input class="form-control me-2" type="search" placeholder="Tìm kiếm theo tên..."
                  name="keyword" th:value="${keyword}" aria-label="Search">
           <button class="btn btn-outline-primary" type="submit">
             <i class="fas fa-search"></i>
           </button>
         </form>
-        <!-- Nút thêm mới -->
         <a th:href="@{/admin/products/add}" class="btn btn-primary">
-          <i class="fas fa-plus"></i> Add New Product
+          <i class="fas fa-plus"></i> Thêm Sản phẩm Mới
         </a>
       </div>
     </div>
 
     <div class="card-body">
-      <!-- Hiển thị thông báo (nếu có) -->
       <div th:if="${message}" class="alert alert-success text-center" th:text="${message}"></div>
       <div th:if="${errorMessage}" class="alert alert-danger text-center" th:text="${errorMessage}"></div>
 
-      <!-- Bảng hiển thị sản phẩm -->
       <div class="table-responsive">
         <table class="table table-hover">
           <thead>
           <tr>
             <th style="width: 5%;">ID</th>
-            <th style="width: 15%;">Image</th>
-            <th>Product Name</th>
-            <th style="width: 15%;">Price</th>
-            <th style="width: 15%;" class="text-center">Actions</th>
+            <th style="width: 15%;">Ảnh</th>
+            <th>Tên Sản phẩm</th>
+            <th style="width: 15%;">Giá</th>
+            <th style="width: 15%;" class="text-center">Hành động</th>
           </tr>
           </thead>
           <tbody>
-          <!-- Thêm dòng thông báo nếu không có sản phẩm nào -->
           <tr th:if="${productPage.empty}">
-            <td colspan="5" class="text-center text-muted">No products found.</td>
+            <td colspan="5" class="text-center text-muted">Không tìm thấy sản phẩm nào.</td>
           </tr>
-          <!-- Lặp qua danh sách sản phẩm -->
           <tr th:each="product : ${productPage.content}">
             <td th:text="${product.id}">1</td>
             <td>
-              <!-- Thêm ảnh thumbnail vào bảng -->
-              <img th:src="@{${product.getPhotosImagePath()}}" alt="Product Image" width="70" class="img-thumbnail"/>
+              <img th:src="@{${product.getPhotosImagePath()}}" alt="Ảnh Sản phẩm" width="70" class="img-thumbnail"/>
             </td>
-            <td th:text="${product.name}">Sample Product</td>
-            <td th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 'COMMA', 2, 'POINT')}">$99.99</td>
+            <td th:text="${product.name}">Sản phẩm Mẫu</td>
+            <td th:text="${#numbers.formatDecimal(product.price, 1, 'COMMA', 2, 'POINT')} + ' VNĐ'">99.99 VNĐ</td>
             <td class="text-center">
-              <a th:href="@{/admin/products/edit/{id}(id=${product.id})}" class="btn btn-sm btn-warning" title="Edit">
+              <a th:href="@{/admin/products/edit/{id}(id=${product.id})}" class="btn btn-sm btn-warning" title="Chỉnh sửa">
                 <i class="fas fa-edit"></i>
               </a>
-              <a th:href="@{/admin/products/delete/{id}(id=${product.id})}" class="btn btn-sm btn-danger" title="Delete"
-                 onclick="return confirm('Are you sure you want to delete this product? ID: [[${product.id}]]')">
+              <a th:href="@{/admin/products/delete/{id}(id=${product.id})}" class="btn btn-sm btn-danger" title="Xóa"
+                 onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không? ID: [[${product.id}]]')">
                 <i class="fas fa-trash"></i>
               </a>
             </td>
@@ -76,28 +67,27 @@
       </div>
     </div>
 
-    <!-- Phân trang (đặt trong card-footer) -->
     <div class="card-footer bg-light" th:if="${productPage.totalPages > 0}">
       <div class="row">
         <div class="col-sm-12 col-md-5 d-flex align-items-center">
           <div class="dataTables_info">
-            Showing [[${productPage.number * productPage.size + 1}]]
-            to [[${productPage.number * productPage.size + productPage.numberOfElements}]]
-            of [[${productPage.totalElements}]] entries
+            Hiển thị từ [[${productPage.number * productPage.size + 1}]]
+            đến [[${productPage.number * productPage.size + productPage.numberOfElements}]]
+            trong tổng số [[${productPage.totalElements}]] mục
           </div>
         </div>
         <div class="col-sm-12 col-md-7 d-flex justify-content-end">
           <nav th:if="${productPage.totalPages > 1}">
             <ul class="pagination mb-0">
               <li class="page-item" th:classappend="${productPage.first} ? 'disabled'">
-                <a class="page-link" th:href="@{/admin/products(page=${productPage.number - 1}, keyword=${keyword})}">Previous</a>
+                <a class="page-link" th:href="@{/admin/products(page=${productPage.number - 1}, keyword=${keyword})}">Trước</a>
               </li>
               <li class="page-item" th:each="i : ${#numbers.sequence(0, productPage.totalPages - 1)}"
                   th:classappend="${i == productPage.number} ? 'active'">
                 <a class="page-link" th:href="@{/admin/products(page=${i}, keyword=${keyword})}" th:text="${i + 1}"></a>
               </li>
               <li class="page-item" th:classappend="${productPage.last} ? 'disabled'">
-                <a class="page-link" th:href="@{/admin/products(page=${productPage.number + 1}, keyword=${keyword})}">Next</a>
+                <a class="page-link" th:href="@{/admin/products(page=${productPage.number + 1}, keyword=${keyword})}">Sau</a>
               </li>
             </ul>
           </nav>

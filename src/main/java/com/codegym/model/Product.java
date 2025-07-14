@@ -24,7 +24,6 @@ public class Product {
     @Column(length = 1024) // Mô tả dài
     private String description;
 
-    // ===== THÊM THUỘC TÍNH MỚI VÀO ĐÂY =====
     @Column(name = "short_description", length = 255)
     private String shortDescription;
 
@@ -46,6 +45,9 @@ public class Product {
     @JoinColumn(name = "brand_id")
     private Brand brand;
 
+    @Enumerated(EnumType.STRING) // Lưu tên của enum (LIGHT, MEDIUM, DARK) vào DB
+    private RoastLevel roastLevel;
+
     public void addExtraImage(String imageName) {
         ProductImage image = new ProductImage();
         image.setName(imageName);
@@ -60,8 +62,6 @@ public class Product {
                 return "/product-images/" + this.id + "/" + this.imageUrl;
             }
         }
-
-        // Nếu có ảnh, trả về đường dẫn đúng
         return "/images/default-product.png";
     }
 

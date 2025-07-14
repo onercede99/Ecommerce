@@ -22,7 +22,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
 
-        // Ưu tiên chuyển hướng cho vai trò có quyền cao hơn trước
         String targetUrl = determineTargetUrl(authentication);
 
         if (response.isCommitted()) {
@@ -36,22 +35,18 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     protected String determineTargetUrl(Authentication authentication) {
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 
-        // Nếu người dùng có vai trò ADMIN, luôn chuyển đến dashboard
         if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             return "/admin/dashboard";
         }
 
-        // Nếu không phải ADMIN, nhưng có vai trò STAFF, chuyển đến trang products
         else if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_STAFF"))) {
-            return "/admin/products"; // Hoặc "/admin/orders" tùy bạn chọn
+            return "/admin/products";
         }
 
-        // Nếu là người dùng thông thường (USER)
         else if (authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_USER"))) {
             return "/";
         }
 
-        // Trường hợp mặc định (dù hiếm khi xảy ra)
         return "/";
     }
 }

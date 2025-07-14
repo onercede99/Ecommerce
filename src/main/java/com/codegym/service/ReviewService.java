@@ -33,22 +33,17 @@ public class ReviewService implements IReviewService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        // Lấy sản phẩm
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
 
-        // KIỂM TRA LOGIC NGHIỆP VỤ
-        // 1. Kiểm tra xem người dùng đã mua sản phẩm này chưa
+
         if (!reviewRepository.hasUserPurchasedProduct(productId, user.getId())) {
-            throw new IllegalStateException("You can only review products you have purchased and received.");
+            throw new IllegalStateException("Bạn chỉ có thể đánh giá các sản phẩm bạn đã đặt hàng.");
         }
 
-        // 2. Kiểm tra xem người dùng đã đánh giá sản phẩm này trước đó chưa
         if (reviewRepository.existsByProductIdAndUserId(productId, user.getId())) {
-            throw new IllegalStateException("You have already reviewed this product.");
+            throw new IllegalStateException("Bạn đã đánh giá sản phẩm này rồi.");
         }
-
-        // Tạo và lưu đánh giá mới
         Review review = new Review();
         review.setProduct(product);
         review.setUser(user);

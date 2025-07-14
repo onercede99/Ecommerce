@@ -65,6 +65,25 @@
                 </tbody>
             </table>
         </div>
+
+        <nav th:if="${totalPages > 0}" aria-label="Order pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                    <a class="page-link" th:href="@{/admin/orders(page=${currentPage - 1}, size=${pageSize})}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                    th:classappend="${i == currentPage ? 'active' : ''}">
+                    <a class="page-link" th:href="@{/admin/orders(page=${i}, size=${pageSize})}" th:text="${i + 1}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                    <a class="page-link" th:href="@{/admin/orders(page=${currentPage + 1}, size=${pageSize})}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </section>
 </body>

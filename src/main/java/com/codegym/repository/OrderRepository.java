@@ -4,6 +4,8 @@ import com.codegym.dto.MonthlyRevenue;
 import com.codegym.model.Order;
 import com.codegym.model.OrderStatus;
 import com.codegym.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -28,8 +30,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             "ORDER BY MONTH(o.orderDate)")
     List<MonthlyRevenue> findMonthlyRevenue();
 
-    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.user")
-    List<Order> findAllWithUserDetails(Sort sort);
+    @Query(value = "SELECT o FROM Order o LEFT JOIN FETCH o.user",
+            countQuery = "SELECT COUNT(o) FROM Order o") // Cần thêm countQuery cho phân trang với JOIN FETCH
+    Page<Order> findAllWithUserDetails(Pageable pageable);
 
     @Query("SELECT SUM(o.totalPrice) FROM Order o WHERE o.status = 'DELIVERED'")
     BigDecimal findTotalRevenueOfDeliveredOrders();
@@ -54,5 +57,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT o FROM Order o JOIN FETCH o.orderDetails WHERE o.id = :id")
     Optional<Order> findByIdWithDetails(@Param("id") Long id);
+
 
 }

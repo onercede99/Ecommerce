@@ -3,20 +3,19 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/client_layout}">
 <head>
-    <title>Trang Chủ - Cửa Hàng Sách Công Nghệ</title>
+    <title>Trang Chủ - Cửa Hàng Sách Tri Thức</title>
 </head>
 <body>
 
 <div layout:fragment="content">
 
-    <!-- S1: NÂNG CẤP HERO BANNER -->
     <section class="hero-section">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6">
                     <div class="hero-section__text animate-on-scroll">
                         <h1 class="display-4 fw-bolder">Kiến Thức Trong Tầm Tay,<br>Sự Nghiệp Cất Cánh</h1>
-                        <p class="fs-5 text-secondary my-4">Khám phá bộ sưu tập sách công nghệ được tuyển chọn kỹ lưỡng, giúp bạn chinh phục mọi thử thách trong sự nghiệp lập trình.</p>
+                        <p class="fs-5 text-secondary my-4">Khám phá bộ sưu tập sách được tuyển chọn kỹ lưỡng, giúp bạn chinh phục mọi thử thách trong sự nghiệp.</p>
                         <a class="btn btn-primary btn-lg mt-3" th:href="@{/products}" role="button">
                             <i class="fas fa-book-open me-2"></i> Khám Phá Ngay
                         </a>
@@ -25,7 +24,7 @@
                 <div class="col-lg-6 d-none d-lg-block">
                     <div class="hero-section__image-container animate-on-scroll">
                         <!-- Bạn có thể thay bằng ảnh của chính mình -->
-                        <img th:src="@{/images/hero-illustration.svg}" alt="Lập trình viên đang đọc sách" class="img-fluid">
+                        <img th:src="@{/images/suckhoedocsach.png}" alt="Lập trình viên đang đọc sách" class="img-fluid" style="height: 100%" width="100%">
                     </div>
                 </div>
             </div>
@@ -67,7 +66,6 @@
         </div>
     </section>
 
-    <!-- S3: SẢN PHẨM NỔI BẬT (Giữ nguyên cấu trúc đã sửa) -->
     <section class="featured-products-section py-5 bg-light">
         <div class="container">
             <div class="text-center mb-5 animate-on-scroll">
@@ -76,7 +74,6 @@
             </div>
             <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
                 <div class="col animate-on-scroll" th:each="product, iterStat : ${products}" th:attr="data-animation-delay=${iterStat.index * 100}">
-                    <!-- Cấu trúc Product Card đã được đồng bộ hóa hoàn toàn -->
                     <div class="product-card">
                         <a th:href="@{/products/{id}(id=${product.id})}" class="product-card__image-link">
                             <img th:src="@{${product.getPhotosImagePath()}}" class="product-card__image" alt="Ảnh sản phẩm">

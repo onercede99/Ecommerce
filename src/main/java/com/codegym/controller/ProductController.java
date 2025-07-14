@@ -2,10 +2,7 @@ package com.codegym.controller;
 
 import com.codegym.dto.ReviewDto;
 import com.codegym.dto.ReviewSummaryDto;
-import com.codegym.model.Brand;
-import com.codegym.model.Category;
-import com.codegym.model.Product;
-import com.codegym.model.Review;
+import com.codegym.model.*;
 import com.codegym.repository.BrandRepository;
 import com.codegym.repository.CategoryRepository;
 import com.codegym.repository.ReviewRepository;
@@ -20,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,6 +54,7 @@ public class ProductController {
                                @RequestParam(name = "brandId", required = false) Long brandId,
                                @RequestParam(name = "minPrice", required = false) Double minPrice,
                                @RequestParam(name = "maxPrice", required = false) Double maxPrice,
+                               @RequestParam(name = "roast", required = false) String roastLevel,
                                Model model) {
 
 
@@ -71,9 +70,11 @@ public class ProductController {
 
         List<Category> categories = categoryRepository.findAll();
         List<Brand> brands = brandRepository.findAll();
+        List<RoastLevel> roastLevels = Arrays.asList(RoastLevel.values());
 
         model.addAttribute("categories", categories);
         model.addAttribute("brands", brands);
+        model.addAttribute("roastLevels", roastLevels);
         model.addAttribute("productPage", productPage);
         model.addAttribute("keyword", keyword);
         model.addAttribute("categoryId", categoryId);
@@ -81,6 +82,7 @@ public class ProductController {
         model.addAttribute("sortOption", sortOption);
         model.addAttribute("minPrice", minPrice);
         model.addAttribute("maxPrice", maxPrice);
+        model.addAttribute("selectedRoastLevel", roastLevel);
 
 
         return "product/list";

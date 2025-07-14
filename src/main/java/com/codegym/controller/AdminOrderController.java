@@ -5,13 +5,16 @@ import com.codegym.model.OrderStatus;
 import com.codegym.repository.OrderRepository;
 import com.codegym.service.IOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page; // Import Page
+import org.springframework.data.domain.PageRequest; // Import PageRequest
+import org.springframework.data.domain.Pageable; // Import Pageable
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import java.util.List; // Vẫn giữ List nếu cần cho các trường hợp khác, nhưng sẽ dùng Page cho listOrders
 
 @Controller
 @RequestMapping("/admin/orders")
@@ -26,12 +29,23 @@ public class AdminOrderController {
         this.orderRepository = orderRepository;
     }
 
-
-
     @GetMapping
-    public String listOrders(Model model) {
-        List<Order> orders = orderRepository.findAllWithUserDetails(Sort.by(Sort.Direction.DESC, "orderDate"));
-        model.addAttribute("orders", orders);
+    public String listOrders(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+        // Tạo đối tượng Pageable với sắp xếp theo orderDate giảm dần
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "orderDate"));
+
+        Page<Order> orderPage = orderRepository.findAllWithUserDetails(pageable);
+
+        // Thêm các thuộc tính vào model để truyền sang Thymeleaf
+        model.addAttribute("orders", orderPage.getContent()); // Lấy danh sách Order cho trang hiện tại
+        model.addAttribute("currentPage", orderPage.getNumber()); // Số trang hiện tại (bắt đầu từ 0)
+        model.addAttribute("totalPages", orderPage.getTotalPages()); // Tổng số trang
+        model.addAttribute("totalItems", orderPage.getTotalElements()); // Tổng số đơn hàng
+        model.addAttribute("pageSize", size); // Kích thước trang hiện tại để dùng trong phân trang
+
         return "admin/order/list";
     }
 
